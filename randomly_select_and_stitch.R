@@ -128,7 +128,9 @@ cut_stitch_function <- function(model_selection, season_selection = NULL, year_s
 
 
 
-
+####################
+# Loop through grid cells
+####################
 
 # Loop through each Grid --------------------
 
@@ -149,6 +151,25 @@ for(i in selected_grids) {
 # Convert to time series
 ###################
 
+write_max_temp_data <- function(start_year, start_month, start_day, grid_name_formatted, model_selection) {
+  
+  # Construct file name with ".tmax" extension
+  file_name <- paste0(grid_name_formatted, ".tmax")
+  
+  # Construct top line of file
+  top_of_file <- sprintf("%d %d %d 1", start_year, start_month, start_day)
+  
+  # Write top line of file
+  write.table(top_of_file, file = file_name, row.names = F, col.names = F, quote = F)
+  
+  # Write max temperature data to file, appending to top line
+  write.table(model_selection$max_temp_1, file = file_name, row.names = F, col.names = F, quote = F, append = T)
+  
+}
+
+# TEST
+write_max_temp_data(1990, 08, 14, grid_name_formatted, CanESM2_rcp45)
+
 ######################## LEAP YEARS -------
 # Leap Years
 # Selected start date
@@ -156,7 +177,5 @@ for(i in selected_grids) {
 
 
 
-####################
-# Loop through grid cells
-####################
+
 

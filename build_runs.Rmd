@@ -8,6 +8,12 @@ date: "2023-04-05"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+```{r}
+source("/Users/mallorygiesie/github/data-cleaning/packages.R")
+source("/Users/mallorygiesie/github/data-cleaning/cal_adapt_4models_allscenarios.R")
+```
+
 1. find df (WORKING) 
 This is the first step in the process of building a run where we get our starting dataframe
 ```{r}
@@ -144,7 +150,6 @@ climate_vars_list <- list(
 
 5. Putting it all together for year
 ```{r}
-
 filter_year <- function(rcp,
                         gcm,
                         sample_cell,
@@ -175,7 +180,7 @@ filter_year <- function(rcp,
   return(df_list)
 }
 #Example for creating a list for the desired years and gcm
-list <-
+run_samples <-
   filter_year(
     rcp = 45,
     gcm = "MIROC5",
@@ -186,3 +191,49 @@ list <-
     climate_table = climate_vars_list
   )
 ```
+
+```{r}
+
+season_def <- list(wet_season = c(11, 12, 1, 2, 3, 4), dry_season = c(11, 12, 1, 2, 3, 4))
+
+# 
+# add_season <- function(data, season, months ) {
+#   
+# data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
+# }
+
+add_season <- function(data, season_def) {
+  
+  data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")))
+  
+  return(data)
+}
+
+season <- add_season(sample_window_example, season_def)
+```
+
+```{r}
+filter_season <- function(rcp,
+                        gcm,
+                        sample_cell,
+                        run_type,
+                        start_date,
+                        duration,
+                        climate_table,
+                        sample_window) {
+  our_gcm <- find_df(rcp, gcm, sample_cell)
+  our_gcm <- add_season(our_gcm)
+  print(our_gcm)
+  
+  df_list <- list()
+  
+  for (i in 1:length(climate_vars_list)) {
+  start_date <- as.Date(start_date, format = "%m/%d/%Y")
+  
+  df <- sample_window(start_date, duration, our_gcm)mir
+  }
+}
+
+test <- filter_season(rcp = 45, gcm = "MIROC5", sample_cell = 2)
+```
+

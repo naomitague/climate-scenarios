@@ -194,22 +194,22 @@ run_samples <-
 
 ```{r}
 
-season_def <- list(wet_season = c(11, 12, 1, 2, 3, 4), dry_season = c(11, 12, 1, 2, 3, 4))
-
+# season_def <- list(wet_season = c(11, 12, 1, 2, 3, 4), dry_season = c(11, 12, 1, 2, 3, 4))
 # 
-# add_season <- function(data, season, months ) {
+# # 
+# # add_season <- function(data, season, months ) {
+# #   
+# # data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
+# # }
+# 
+# add_season <- function(data, season_def) {
 #   
-# data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
+#   data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")))
+#   
+#   return(data)
 # }
-
-add_season <- function(data, season_def) {
-  
-  data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")))
-  
-  return(data)
-}
-
-season <- add_season(sample_window_example, season_def)
+# 
+# season <- add_season(sample_window_example, season_def)
 ```
 
 ```{r}

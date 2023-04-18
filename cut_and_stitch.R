@@ -40,7 +40,7 @@ cut_and_stitch <- function(model_selection,
 }
 
 # TEST
-cut_stitch_function(model_selection = CanESM2_rcp45, 
+cut_and_stitch(model_selection = CanESM2_rcp45, 
                     year_selection = (sample_grid_series), 
                     grid_number = 3)
 

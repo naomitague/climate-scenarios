@@ -102,3 +102,78 @@ for (i in year_selection) {
   
 }
 
+
+
+
+
+
+
+
+
+
+
+# BY SEASON ------ Not set up yet
+
+# Predefine seasons
+months <- 1:12
+seasons <- c("Winter", "Winter", "Spring", "Spring", "Spring", "Summer",
+             "Summer", "Summer", "Fall", "Fall", "Fall", "Winter")
+season_data <- data.frame(month = months, season = seasons)
+
+# stitch first season/year
+
+cut_stitch_function <- function(model_selection, season_selection = NULL, year_selection) {
+  
+  # 1. Add season and year column to original data frame
+  # Question about model dataframe structure: will it have month/year/season columns??
+  original_model <- model_selection %>%
+    mutate(year = lubridate::year(time)) %>%        # Need to be able to filter by year
+    mutate(month = lubridate::month(time))          # Pull out the numeric month from a model
+  original_model <- left_join(original_model, season_data, by = "month")    # Join seasonal column
+  
+  # 2. Select range by time and cut, save to new model
+  new_cut <- original_model[which(original_model$season == season_selection &
+                                    original_model$year == year_selection), ]
+  
+  # 3. Add this cut to the existing dataframe for all cuts
+  combined_cut_model <- rbind(combined_cut_model, new_cut)   # Double arrow to update global model
+  
+  # End loop
+  # Autonaming of file??
+  newname <<- combined_cut_model
+}
+
+
+
+
+###################
+# Convert to time series
+###################
+
+# WIKI has info on auto-naming
+
+write_max_temp_data <- function(start_year, start_month, start_day, grid_name_formatted, model_selection) {
+  
+  # Construct file name with ".tmax" extension
+  file_name <- paste0(grid_name_formatted, ".tmax")
+  
+  # Construct top line of file
+  top_of_file <- sprintf("%d %d %d 1", start_year, start_month, start_day)
+  
+  # Write top line of file
+  write.table(top_of_file, file = file_name, row.names = F, col.names = F, quote = F)
+  
+  # Write max temperature data to file, appending to top line
+  write.table(model_selection$max_temp_1, file = file_name, row.names = F, col.names = F, quote = F, append = T)
+  
+}
+
+# TEST
+write_max_temp_data(1990, 08, 14, grid_name_formatted, CanESM2_rcp45)
+
+######################## LEAP YEARS -------
+# Leap Years
+# Selected start date
+# Cut out a day or add a day for leap year???
+# sprintf
+

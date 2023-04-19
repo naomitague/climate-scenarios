@@ -156,3 +156,37 @@ for (i in seq_along(file_type)) {
   print(col_names[i])
 }
 
+
+
+### LEAP YEAR
+# create example data
+df <- data.frame(
+  year = c(2020, 2021, 2022, 2023),
+  temp = c(25, 26, 27, 28)
+)
+
+# loop over years in dataset
+for (i in seq_along(df$year)) {
+  year <- df$year[i]
+  expected_leap_year <- get_expected_leap_year(year)
+  if (year == expected_leap_year) {
+    if (leap_year(year) & nrow(filter(df, year == year & month == 2 & day == 29)) == 1) {
+      # keep data for leap year with 29 days in February
+    } else if (!leap_year(year) & nrow(filter(df, year == year & month == 2 & day == 29)) == 1) {
+      # add day with average of dates before/after
+      before <- filter(df, year == year & month == 2 & day < 29)$temp
+      after <- filter(df, year == year & month == 2 & day > 29)$temp
+      avg <- mean(c(before, after))
+      df <- rbind(df, data.frame(year = year, month = 2, day = 29, temp = avg))
+    } else {
+      # keep data for non-leap year or leap year without 29 days in February
+    }
+  } else {
+    if (nrow(filter(df, year == year & month == 2 & day == 29)) == 1) {
+      # remove February 29th data for unexpected leap year
+      df <- filter(df, !(year == year & month == 2 & day == 29))
+    } else {
+      # keep data for non-leap year
+    }
+  }
+}

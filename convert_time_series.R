@@ -2,13 +2,14 @@
 # Convert to time series
 ###################
 
-# WIKI has info on auto-naming
-
-
-
+# WIKI has info on naming files
 # how to pull out NAME from cut_and_stitch to use as input here instead of model_selection
 
 convert_time_series <- function(start_year, start_month, start_day, grid_name_formatted, model_selection) {
+  
+  # Create folder for time series files with shared name
+  folder_name <- paste0(grid_name_formatted, "_time_series")
+  dir.create(folder_name, showWarnings = FALSE)
   
   ##### LEAP YEAR #################
   # ADD loop with start_date to add in/delete leap year day
@@ -25,6 +26,7 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
   #col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
   col_names <- c("max_temp_1", "min_temp_1", "precip_1", "max_humidity_1", "min_humidity_1", "wind_1")
   #col_names <- c("max_temp_2", "min_temp_2", "precip_2", "max_humidity_2", "min_humidity_2", "wind_2")
+  # Currently multiple col_names because of the format of the dataframes, but ultimate plan is to separate by grid so they will be without the _num
   
   for (i in seq_along(file_type)) {
     # Construct file name with ".tmax" extension
@@ -42,7 +44,7 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
   }
 }
 
-
 # TEST
 convert_time_series(1990, 08, 14, "new_name", CanESM2_rcp45)
 view(new_name.tmax)
+

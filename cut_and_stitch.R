@@ -15,6 +15,8 @@ cut_and_stitch <- function(model_selection,
   original_model <- model_selection %>%        # Placeholder model to manipulate in function
     mutate(year = lubridate::year(time))       # Need to be able to filter by year
   
+  # ADD IN: Filter instead by water year
+  
   # Empty data frame with column names
   col_names <- colnames(original_model)
   combined_cut_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))

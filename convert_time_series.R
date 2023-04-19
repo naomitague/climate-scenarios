@@ -3,9 +3,11 @@
 ###################
 
 # WIKI has info on naming files
-# how to pull out NAME from cut_and_stitch to use as input here instead of model_selection
+# how to pull out NAME from cut_and_stitch to use as input here instead of our_gcm
 
-convert_time_series <- function(start_year, start_month, start_day, grid_name_formatted, model_selection) {
+# Mallory's date output: start_date
+
+convert_time_series <- function(start_year, start_month, start_day, grid_name_formatted, our_gcm = our_gcm) {
   
   # Create folder for time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")
@@ -39,12 +41,45 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
     write.table(top_of_file, file = file_name, row.names = F, col.names = F, quote = F)
     
     # Write max temperature data to file, appending to top line
-    write.table(model_selection[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
+    write.table(our_gcm[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
     
   }
 }
 
-# TEST
-convert_time_series(1990, 08, 14, "new_name", CanESM2_rcp45)
-view(new_name.tmax)
 
+# TEST
+convert_time_series(1990, 08, 14, "new_name", our_gcm = our_gcm)
+
+
+
+####################
+# Loop through grid cells
+####################
+
+# Loop through each Grid --------------------
+
+# save selected grid cells
+# for each grid cell....
+# Loop through each of sample_grid_series for each of the selected grids in cut_stitch_function
+# Loop through convert_time_series for each grid cell
+
+# need a function to save the selected_grids
+selected_grids <- list()
+
+for(i in seq_along(selected_grids)) {
+  
+  grid_number <- i
+  grid_name_formatted <- paste0("grid_", grid_number)
+  
+  # loop through cut and stitch
+  cut_and_stitch(our_gcm = our_gcm, 
+                 year_selection = year_selection,
+                 grid_number = grid_number)
+  
+  # loop through converting time series
+  convert_time_series(start_year = start_year,
+                      start_month = start_month,
+                      start_day = start_day,
+                      grid_name_formatted = grid_name_formatted,
+                      our_gcm = our_gcm)
+}

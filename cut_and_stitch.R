@@ -6,13 +6,13 @@
 
 # Cutting selections BY YEAR-------------------------
 # Cut each year from the climate model dataframe and stitch together
-cut_and_stitch <- function(model_selection,
+cut_and_stitch <- function(our_gcm = our_gcm,
                            year_selection = unlist(sample_grid_series),
                            grid_number) {
   
   
   # Add year column to original data frame
-  original_model <- model_selection %>%        # Placeholder model to manipulate in function
+  original_model <- our_gcm %>%        # Placeholder model to manipulate in function
     mutate(year = lubridate::year(time))       # Need to be able to filter by year
   
   # ADD IN: Filter instead by water year
@@ -32,7 +32,7 @@ cut_and_stitch <- function(model_selection,
   } # END LOOP
   
   # Name file with model and grid number
-  model_name <- deparse(substitute(model_selection))
+  model_name <- deparse(substitute(our_gcm))
   grid_name_formatted <- paste0(str_to_title(model_name), "_grid", grid_number)
   
   # Assign the resulting list to a variable in the global environment
@@ -42,30 +42,10 @@ cut_and_stitch <- function(model_selection,
 }
 
 # TEST
-cut_and_stitch(model_selection = CanESM2_rcp45, 
-                    year_selection = (sample_grid_series), 
-                    grid_number = 3)
+cut_and_stitch(our_gcm = our_gcm, 
+               year_selection = (sample_grid_series), 
+               grid_number = 3)
 
-
-
-
-
-####################
-# Loop through grid cells
-####################
-
-# Loop through each Grid --------------------
-
-# save selected grid cells
-# for each grid cell....
-# Loop through each of sample_grid_series for each of the selected grids
-
-# need a function to save the selected_grids
-selected_grids <- list()
-
-for(i in selected_grids) {
-  cut_stitch_function(model_selection, sample_grid_series, grid_number = i)
-}
 
 
 

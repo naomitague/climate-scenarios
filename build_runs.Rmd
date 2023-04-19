@@ -228,7 +228,7 @@ filter_season <- function(rcp,
   for (i in 1:length(climate_vars_list)) {
   start_date <- as.Date(start_date, format = "%m/%d/%Y")
   
-  df <- sample_window(start_date, duration, our_gcm)mir
+  df <- sample_window(start_date, duration, our_gcm)
   }
 }
 # run_samples <- filter_season(rcp = 45, gcm = "MIROC5", sample_cell = 2) 

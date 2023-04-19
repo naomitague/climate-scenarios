@@ -54,14 +54,13 @@ find_df <- function(rcp, gcm, sample_cell) {
 }
 
 # Example usage of the function
-df_example <- find_df(45, "MIROC5", 2)
+df_example <- find_df(45, "MIROC5", 2) 
 ```
 
 2. filter to correct dates (WORKING)
 ```{r}
 sample_window <- function(start_date, sample_window, df) {
   start_date <- as.Date(start_date, format = "%m/%d/%Y") # Convert start_date to date format
-  
   start <- (start_date - years(sample_window)) # Calculate the first year in the sampling window
   end <- (start_date + years(sample_window)) # Calculate the last year in the sampling window
   
@@ -92,6 +91,7 @@ climate_vars <-
 4. filter one year on climate table (WORKING)
 ```{r}
 filter_df <- function(df, climate_table) {
+  # df$water_year <- year(if_else(month(df$time) >= 10, df$time + months(3), df$time - months(9)))
   df <- df %>% group_by(year = lubridate::year(time)) %>% summarise(wind = mean(wind),
                                                                     max_temp = mean(max_temp),
                                                                     min_temp = mean(min_temp),
@@ -157,7 +157,7 @@ filter_year <- function(rcp,
                         duration,
                         climate_table,
                         sample_window) {
-  our_gcm <- find_df(rcp, gcm, sample_cell)
+  our_gcm <<- find_df(rcp, gcm, sample_cell)
   
   df_list <- list()
   
@@ -173,7 +173,7 @@ filter_year <- function(rcp,
     df_list[[i]] <- years
     print(df_list)
     start_date <- start_date + years(1) # Add one year to start_date
-  }
+}
   
 #Returns the list of filtered years for each data frame that can be put into the stitches function
   return(df_list)
@@ -231,7 +231,6 @@ filter_season <- function(rcp,
   df <- sample_window(start_date, duration, our_gcm)mir
   }
 }
-
-test <- filter_season(rcp = 45, gcm = "MIROC5", sample_cell = 2)
+# run_samples <- filter_season(rcp = 45, gcm = "MIROC5", sample_cell = 2) 
 ```
 

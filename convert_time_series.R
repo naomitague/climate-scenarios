@@ -30,7 +30,7 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
   
   for (i in seq_along(file_type)) {
     # Construct file name with ".tmax" extension
-    file_name <- paste0(grid_name_formatted, file_type[i])
+    file_name <- file.path(folder_name, paste0(grid_name_formatted, file_type[i]))
     
     # Construct top line of file
     top_of_file <- sprintf("%d %d %d 1", start_year, start_month, start_day)

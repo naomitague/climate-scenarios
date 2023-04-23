@@ -25,8 +25,8 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
   
   # LOOP tied together file type and column name
   file_type <- c(".tmax", ".tmin", ".rain", ".relative_humidity_max", ".relative_humidity_min", ".wind")
-  #col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
-  col_names <- c("max_temp_1", "min_temp_1", "precip_1", "max_humidity_1", "min_humidity_1", "wind_1")
+  col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
+  #col_names <- c("max_temp_1", "min_temp_1", "precip_1", "max_humidity_1", "min_humidity_1", "wind_1")
   #col_names <- c("max_temp_2", "min_temp_2", "precip_2", "max_humidity_2", "min_humidity_2", "wind_2")
   # Currently multiple col_names because of the format of the dataframes, but ultimate plan is to separate by grid so they will be without the _num
   

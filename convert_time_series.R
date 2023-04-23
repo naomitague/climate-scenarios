@@ -22,6 +22,9 @@ convert_time_series <- function(start_year, start_month, start_day, grid_name_fo
   # IF extra day, delete Feb 29
   # IF short a day, repeat the previous day or average between previous/following day on Feb 29
   
+  # MAKE SURE every 4th year is a leap year
+     # Total days of every 4 years matches expected
+  
   
   # LOOP tied together file type and column name
   file_type <- c(".tmax", ".tmin", ".rain", ".relative_humidity_max", ".relative_humidity_min", ".wind")

@@ -50,6 +50,7 @@ find_df <- function(rcp, gcm, sample_cell) {
     rename_all( ~ gsub(paste0("_", sample_cell, "$"), "", .))
   
   # Return the resulting data frame
+  combined_df <- combined_df %>% mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time)))
   return(combined_df)
 }
 
@@ -92,14 +93,13 @@ climate_vars <-
 4. filter one year on climate table (WORKING)
 ```{r}
 filter_df_year <- function(df, climate_table, start_date) {
-  # df$water_year <- year(if_else(month(df$time) >= 10, df$time + months(3), df$time - months(9)))
-  df <- df %>% group_by(year = lubridate::year(time)) %>% summarise(wind = mean(wind),
+  df <- df %>% group_by(wy = water_year) %>% summarise(wind = mean(wind),
                                                                     max_temp = mean(max_temp),
                                                                     min_temp = mean(min_temp),
                                                                     precip = sum(precip),
                                                                     min_humidity = mean(min_humidity),
                                                                     max_humidity = mean(max_humidity))
-   
+  print(tail(df))
  for (j in 1:nrow(climate_table)) {
     climate_var <- climate_table[j, "variable"]
     lower <- climate_table[j, "lower"] 
@@ -111,10 +111,9 @@ filter_df_year <- function(df, climate_table, start_date) {
 
     df <- df %>% filter(!is.na(!!sym(climate_var)), !!sym(climate_var) >= lower_perc, !!sym(climate_var) <= upper_perc)
  }
-return(df$year)
+return(df$wy)
 }
-
-# test <- filter_df(sample_window_example, climate_vars)
+#test <- filter_df(sample_window_example, climate_vars)
 ```
 
 ```{r}
@@ -150,114 +149,7 @@ climate_vars_list <- list(
 
 5. Putting it all together for year
 ```{r}
-# filter_year <- function(rcp,
-#                         gcm,
-#                         sample_cell,
-#                         run_type,
-#                         start_date,
-#                         duration,
-#                         climate_table,
-#                         sample_window) {
-#   our_gcm <<- find_df(rcp, gcm, sample_cell)
-#   
-#   df_list <- list()
-#   
-#   for (i in 1:length(climate_vars_list)) {
-#     start_date <- as.Date(start_date, format = "%m/%d/%Y")
-#     
-#     df <- sample_window(start_date, duration, our_gcm)
-#     
-#     # Call filter_df at index i of the climate variables list
-#     years <- filter_df_year(df, climate_table[[i]])
-#     
-#     # Appends the output to the df_list
-#     df_list[[i]] <- years
-#     print(df_list)
-#     start_date <- start_date + years(1) # Add one year to start_date
-# }
-#   
-# #Returns the list of filtered years for each data frame that can be put into the stitches function
-#   return(df_list)
-# }
-# #Example for creating a list for the desired years and gcm
-# run_samples <-
-#   filter_year(
-#     rcp = 45,
-#     gcm = "MIROC5",
-#     sample_cell = 2,
-#     start_date = '04/07/2023',
-#     sample_window = 10,
-#     duration = 10,
-#     climate_table = climate_vars_list
-#   )
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-filter_df_season <- function(df, climate_table) {
-  #df$water_year <- year(if_else(month(df$time) >= 10, df$time + months(3), df$time - months(9)))
-  df <- df %>% group_by(year = lubridate::year(time), season) %>% summarise(wind = mean(wind),
-                                                                    max_temp = mean(max_temp),
-                                                                    min_temp = mean(min_temp),
-                                                                    precip = sum(precip),
-                                                                    min_humidity = mean(min_humidity),
-                                                                    max_humidity = mean(max_humidity))
-  
-
-     print('****************')
-     print(df)
-    print('****************')
-   
- for (j in 1:nrow(climate_table)) {
-    climate_var <- climate_table[j, "variable"]
-    lower <- climate_table[j, "lower"] 
-    upper <- climate_table[j, "upper"]
-    
-    print("*******")
-    print(df)
-  
-    df2 <- df %>% filter(season == season[j])
-     
-    lower_perc <- quantile(df2[[climate_var]], lower, na.rm = TRUE)
-
-    upper_perc <- quantile(df2[[climate_var]], upper, na.rm = TRUE)
-
-    df3 <- df2 %>% filter(!is.na(!!sym(climate_var)), !!sym(climate_var) >= lower_perc, !!sym(climate_var) <= upper_perc)
- }
-season_year <- paste(df3$season, df3$year)
-return(season_year)
-}
-
-test <- filter_df_season(season, climate_vars)
-
-```
-
-```{r}
-season_def <- list(wet_season = c(11, 12, 1, 2, 3, 4), dry_season = c(5, 6, 7, 8, 9, 10))
-
-add_season <- function(data) {
-
-data <- data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
-  
-return(data)
-}
-
-season <- add_season(sample_window_example)
-```
-
-```{r}
-filter_season <- function(rcp,
+filter_year <- function(rcp,
                         gcm,
                         sample_cell,
                         run_type,
@@ -266,40 +158,35 @@ filter_season <- function(rcp,
                         climate_table,
                         sample_window) {
   our_gcm <<- find_df(rcp, gcm, sample_cell)
-  our_gcm <<- add_season(our_gcm)
-  
+
   df_list <- list()
-  
+
   for (i in 1:length(climate_vars_list)) {
-  start_date <- as.Date(start_date, format = "%m/%d/%Y")
-    
-  df <- sample_window(start_date, duration, our_gcm)
-  
-  # Call filter_df at index i of the climate variables list
-  season_year <- filter_df_season(df, climate_table[[i]])
+    start_date <- as.Date(start_date, format = "%m/%d/%Y")
+
+    df <- sample_window(start_date, duration, our_gcm)
+
+    # Call filter_df at index i of the climate variables list
+    years <- filter_df_year(df, climate_table[[i]])
 
     # Appends the output to the df_list
-    df_list[[i]] <- season_year
+    df_list[[i]] <- years
     print(df_list)
     start_date <- start_date + years(1) # Add one year to start_date
-    season_month <- month(start_date) + lubridate::month(6)
 }
-  
+
 #Returns the list of filtered years for each data frame that can be put into the stitches function
   return(df_list)
 }
- 
+#Example for creating a list for the desired years and gcm
 run_samples <-
-  filter_season(
+  filter_year(
     rcp = 45,
     gcm = "MIROC5",
     sample_cell = 2,
-    start_date = '10/07/2023',
+    start_date = '04/07/2023',
     sample_window = 10,
     duration = 10,
     climate_table = climate_vars_list
-  ) 
-
-#df <- sample_window('10/07/2023', 10, our_gcm)
+  )
 ```
-

@@ -76,6 +76,7 @@ sample_window <- function(start_date, sample_window, df) {
 sample_window_result <- sample_window('04/07/2023', 10, find_df_result)
 ```
 
+
 ```{r}
 #creating a list for practice below
 climate_vars_list <- list(
@@ -101,7 +102,7 @@ climate_vars_list <- list(
   ),
   data.frame(
     variable = c('wind'),
-    lower = (.1),
+    lower = (.8),
     upper = (.9)
   )
 )
@@ -119,6 +120,7 @@ return(data)
 add_season_result <- add_season(sample_window_result)
 ```
 
+
 ```{r}
 climate_vars <- list(
   variable = c('wind', 'precip', 'max_temp'),
@@ -126,6 +128,7 @@ climate_vars <- list(
   upper = c(0.9, 0.9, 0.9)
 )
 ```
+
 
 ```{r}
 filter_df_season <- function(df, climate_table) {
@@ -164,6 +167,7 @@ filter_df_season <- function(df, climate_table) {
 
 season_year_df_result <- filter_df_season(add_season_result, climate_vars_list[1])
 ```
+
 
 ```{r}
 filter_season <- function(rcp,

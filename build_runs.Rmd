@@ -51,7 +51,7 @@ find_df <- function(rcp, gcm, sample_cell) {
   
   # Return the resulting data frame
   combined_df <- combined_df %>% mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time)))
-  return(combined_df)
+  return(combined_df) # adding water year column 
 }
 
 # Example usage of the function
@@ -92,7 +92,7 @@ climate_vars <-
 
 4. filter one year on climate table (WORKING)
 ```{r}
-filter_df_year <- function(df, climate_table, start_date) {
+filter_df_year <- function(df, climate_table) {
   df <- df %>% group_by(wy = water_year) %>% summarise(wind = mean(wind),
                                                                     max_temp = mean(max_temp),
                                                                     min_temp = mean(min_temp),
@@ -113,7 +113,8 @@ filter_df_year <- function(df, climate_table, start_date) {
  }
 return(df$wy)
 }
-#test <- filter_df(sample_window_example, climate_vars)
+
+test <- filter_df_year(sample_window_example, climate_vars_list[[1]])
 ```
 
 ```{r}
@@ -152,7 +153,7 @@ climate_vars_list <- list(
 filter_year <- function(rcp,
                         gcm,
                         sample_cell,
-                        run_type,
+                        run_type, 
                         start_date,
                         duration,
                         climate_table,
@@ -165,7 +166,7 @@ filter_year <- function(rcp,
     start_date <- as.Date(start_date, format = "%m/%d/%Y")
 
     df <- sample_window(start_date, duration, our_gcm)
-
+    
     # Call filter_df at index i of the climate variables list
     years <- filter_df_year(df, climate_table[[i]])
 

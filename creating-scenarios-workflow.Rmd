@@ -1,0 +1,80 @@
+---
+title: "Creating Climate Scenarios Workflow"
+author: "Fire Futures"
+date: "2023-04-25"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(strex)
+library(tidyverse)
+library(lubridate)
+library(purrr)
+```
+
+
+This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
+
+#1 importing and cleaning data - API or specify our format 
+
+
+#2 Building runs 
+
+A. First find correct GCM, RCP, & Sample Cell if you used the data cleaning step above & have multiple in your global environment 
+You can also upload your own data if it is in the following format:
+
+ADD FORMAT
+
+```{r}
+source('.../climate-scenarios/build_runs-functions/find_df.R')
+
+find_df_example <- find_df(45, "MIROC5", 2)
+```
+
+B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1. (? fix the function to allow null value?) 
+
+```{r, Example Percentile Table}
+climate_vars_list <- list(
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.1, .1, .1),
+    upper = c(.99, .99, .99)
+  ),
+  data.frame(
+    variable = c('min_temp'),
+    lower = c(.55),
+    upper = c(.85)
+  ),
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.2, .2, .6),
+    upper = c(.80, .80, .80)
+  ),
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.25, .25, .65),
+    upper = c(.75, .75, .75)
+  ),
+  data.frame(
+    variable = c('wind'),
+    lower = (0),
+    upper = (1)
+  )
+)
+```
+
+Finding Runs Based on Years: 
+
+```{r}
+
+
+
+```
+
+
+
+
+
+
+

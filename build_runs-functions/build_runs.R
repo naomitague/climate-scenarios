@@ -34,6 +34,16 @@ build_runs <- function(rcp = NULL,
                        climate_table,
                        sample_window) {
   
+  #SAVING ALL CRITERIA FOR TIME SERIES TO ADD TO META DATE FUNCTION 
+  rcp <<- rcp
+  gcm <<- gcm
+  sample_cell <<- sample_cell
+  our_gcm <<- our_gcm
+  run_type <<-
+  start_date <<- start_date
+  climate_table <<- climate_table
+  sample_window <<- sample_window
+  
   if (!is.null(our_gcm)) {
     # If our_gcm argument is provided, use it as the input data frame
     our_gcm <- our_gcm %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))

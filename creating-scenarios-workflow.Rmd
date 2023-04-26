@@ -51,29 +51,41 @@ B. Create your table to designate desired percentile filters for each run. Make 
 If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1
 (? fix the function to allow null value ?) 
 
+Run & Notes = Input for metadeta file. 
+
 ```{r, Example Percentile Table}
 climate_vars_list <- list(
   data.frame(
+    run = 'year 1 season 1',
+    notes = 'Likely Scenario',
     variable = c('wind', 'precip', 'max_temp'),
     lower = c(.1, .1, .1),
     upper = c(.99, .99, .99)
   ),
   data.frame(
+    run = 'year 1 season 2',
+    notes = 'Average-Above Average Dry',
     variable = c('min_temp'),
     lower = c(.55),
     upper = c(.85)
   ),
   data.frame(
+    run = 'year 2 season 1',
+    notes = 'Hot Average',
     variable = c('wind', 'precip', 'max_temp'),
     lower = c(.2, .2, .6),
     upper = c(.80, .80, .80)
   ),
   data.frame(
+    run = 'year 2 season 2',
+    notes = 'Average: wind, precip, max_temp',
     variable = c('wind', 'precip', 'max_temp'),
     lower = c(.25, .25, .65),
     upper = c(.75, .75, .75)
   ),
   data.frame(
+    run = 'year 3 season 1',
+    notes = 'No specification',
     variable = c('wind'),
     lower = (0),
     upper = (1) #ALL RUNS IN SAMPLE WINDOW 
@@ -83,7 +95,12 @@ climate_vars_list <- list(
 
 Finding Runs Based on Years: Here we will use the build_runs function and specify all of the information we want...
 Instead of specifying rcp, gcm and sample cell you can specify a data frame (our_gcm = dat)
-```{r}
+
+Two examples: 
+one specifying gcm, rcp, and sample cell to find associated data
+the other specifying a data frame already in global environment/in correct format 
+
+```{r finding runs that match climate percentiles}
 run_samples <<-
   build_runs(
     rcp = 45, #45 or 85
@@ -93,6 +110,14 @@ run_samples <<-
     sample_window = 10, #number of years below and above the run start date we'd like to filter for
     climate_table = climate_vars_list, #this is the list we defined above
     run_type = "season") #year or season. seasons defined in the build_runs function
+
+run_samples <<-
+  build_runs(
+    our_gcm = dat, #df in correct format 
+    start_date = '04/07/2023', #first year in the time series 
+    sample_window = 10, #number of years below and above the run start date we'd like to filter for
+    climate_table = climate_vars_list, #this is the list we defined above
+    run_type = "year") #year or season. seasons defined in the build_runs function
 
 head(run_samples)
 ```

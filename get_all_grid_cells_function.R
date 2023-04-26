@@ -14,14 +14,13 @@
 
 
 ### BY SEASON OR YEAR -----
-cut_and_stitch <- function(series_selection = unlist(sample_grid_series),
-                           grid_number,
+cut_and_stitch <- function(series_selection = unlist(sample_grid_series), # list of the dates we want (either year or seasons)
+                           grid_number, # this function will go through one grid_number at a time
                            rcp = 45,
-                           gcm = "MIROC5",
-                           sample_cell = 2) { # vic modified inputs
+                           gcm = "MIROC5") { # vic modified inputs: the last 2 will be user inputs
   
-  # finds the gcm for each grid cell
-  our_gcm <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified
+  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
+  our_gcm <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified. may want to relabel sample_cell in the find_df func
   
   # Empty data frame with column names
   col_names <- colnames(our_gcm)
@@ -31,7 +30,7 @@ cut_and_stitch <- function(series_selection = unlist(sample_grid_series),
   # Check if series_selection is by season or year
   if(all(is.numeric(series_selection))) {
     
-    # YEARS: Loop through, select range by time and cut and save
+    # YEARS: Loop through, select range by time and cut and save for the time frames for the sample cell
     for (i in series_selection) {
       new_cut <- our_gcm[which(our_gcm$water_year == i), ]
       
@@ -42,7 +41,7 @@ cut_and_stitch <- function(series_selection = unlist(sample_grid_series),
     
   } else {
     
-    # SEASONS: Loop through, select range by time and cut and save
+    # SEASONS: Loop through, select range by time and cut and save for the time frames for the sample cell
     for (i in season_selection) {
       season_year <- strsplit(i, "_")
       wet_dry <- season_year[[1]][1]
@@ -58,13 +57,13 @@ cut_and_stitch <- function(series_selection = unlist(sample_grid_series),
   
   
   
-  # Name file with model and grid number
+  # Name the grid cell file with model and grid number
   grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number) # vic modified
   
-  # Assign the resulting list to a variable in the global environment
+  # Assign the resulting timeseries to a variable in the global environment
   assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
   
-  #return(combined_cut_model) # vic modified
+  #return(combined_cut_model) # vic modified - i'm thinking we dont need to return something if we're putting stuff into the global environment?
 }
 
 

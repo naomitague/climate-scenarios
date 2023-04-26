@@ -527,3 +527,82 @@ for(i in seq_along(selected_grids)) {
                  start_date,
                  grid_number = grid_number[i])
 }
+
+
+
+# LEAP YEAR -----
+# create a sample dataframe with dates
+datelist <- data.frame(date = c("2024-01-01", "2024-02-28", "2024-02-29", "2024-03-01"))
+
+# loop through each row of the dataframe
+for (i in 1:nrow(datelist)) {
+  
+  # extract the date from the row
+  date <- datelist$date[i]
+  date <- as.Date(date)
+  
+  # check if the date is February 29th
+  if (format(date, "%m-%d") == "02-29") {
+    
+    # delete the row
+    df <- df[-i]
+    
+    # decrement the row counter
+    i <- i - 1
+    
+  }
+  
+}
+
+# print the resulting dataframe
+print(df)
+
+
+# create a sample dataframe with dates spanning 100 years
+start_year <- 1923
+end_year <- 2022
+dates <- seq(as.Date(paste0(start_year, "-01-01")), as.Date(paste0(end_year, "-12-31")), by = "day")
+df <- data.frame(date = dates)
+
+# filter out February 29th dates
+df <- df[!(format(df$date, "%m-%d") == "02-29"), ]
+
+# print the resulting dataframe
+print(df)
+
+
+# New attempt
+# create a sample dataframe with dates spanning 100 years
+start_year <- 1923
+end_year <- 2022
+dates <- seq(as.Date(paste0(start_year, "-01-01")), as.Date(paste0(end_year, "-12-31")), by = "day")
+df <- data.frame(date = dates, col1 = runif(length(dates)), col2 = rnorm(length(dates)))
+
+# loop through each year in the dataframe
+for (year in start_year:end_year) {
+  
+  # check if the year is a leap year
+  if (leap_year(year) =) {
+    
+    # get the date before and after February 29th
+    before_date <- as.Date(paste0(year, "-02-28"))
+    after_date <- as.Date(paste0(year, "-03-01"))
+    
+    # calculate the row to insert
+    insert_row <- data.frame(date = as.Date(paste0(year, "-02-29")))
+    for (col in names(df)[-1]) {
+      insert_row[[col]] <- mean(c(df[df$date == before_date, col], df[df$date == after_date, col]))
+    }
+    
+    # insert the row into the dataframe
+    df <- rbind(df, insert_row)
+    
+  }
+  
+}
+
+# sort the dataframe by date
+df <- df[order(df$date), ]
+
+# print the resulting dataframe
+print(df)

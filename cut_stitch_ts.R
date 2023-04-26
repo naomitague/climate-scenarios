@@ -19,6 +19,7 @@
 cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need to loop per grid
                           series_selection = unlist(sample_grid_series),
                           start_date,
+                          duration, # WHAT IS THIS CALLED
                           grid_number) { # grid_number is placeholder, 
                                          # will need to pull out from grid cells to name
   
@@ -70,30 +71,30 @@ cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need 
   
   # DEALING WITH UNORDERED LEAP YEAR -----
   # Remove all February 29ths in the dataframe
-  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$date, "%m-%d") == "02-29"), ]
+  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ] # WORKS
   
   # Add here a loop of every 4 years (days)
   start_year <- year(start_date)
-  end_year <- year(start_date + duration) #### WHAT IS DURATION CALLED?
+  end_year <- year(start_date + duration)
   for (year in start_year:end_year) {
-    if (leap_year(year)) # CHECK IF THIS IS RIGHT SETUP
+    if (leap_year(year)) 
       
       # Before/after date to average the variable columns
-      before_date <- as.Date(paste0(year, "02-28"))
-      after_date <- as.Date(paste0(year, "03-01"))
+      before_date <- as.Date(paste0(year, "-02-28")) # WORKS
+      after_date <- as.Date(paste0(year, "-03-01"))
       
       # Calculate row to insert
-      insert_row <- data.frame(date = as.Date(paste0(year, "02-29")))
+      insert_row <- data.frame(time = as.Date(paste0(year, "-02-29"))) # WORKS IF LEAP YEAR
       for (col in names(combined_cut_model[-1])) {
         
-        insert_row[[col]] <- mean(c(combined_cut_model[combined_cut_model$date == before_date, col],
-                                    combined_cut_model[combined_cut_model$date == after_date, col]))
+        insert_row[[col]] <- mean(c(combined_cut_model[combined_cut_model$time == before_date, col],
+                                    combined_cut_model[combined_cut_model$time == after_date, col]))
       }
       combined_cut_model <- rbind(combined_cut_model, insert_row)
   }
   
   # Order dataframe by date for added leap years
-  combined_cut_model <- combined_cut_model[order(combined_cut_model$date), ]
+  combined_cut_model <- combined_cut_model[order(combined_cut_model$time), ]
   
   # Save final dataframe as a .csv
   write.csv(combined_cut_model, 
@@ -125,4 +126,10 @@ cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need 
 
 
 # TEST
-start_date <- as.Date("05/05/2020", format = "%m/%d/%Y")
+duration = 5
+start_date <- as.Date("2006-01-01")
+cut_stitch_ts(
+  start_date = start_date,
+  grid_number = 2,
+  duration = duration)
+

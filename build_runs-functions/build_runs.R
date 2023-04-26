@@ -12,7 +12,7 @@
 #' @param climate_table List of data frames containing climate variable information for filtering.
 #' @param sample_window Function to generate sample window of data.
 #'
-#' @return A list of filtered data frames, one for each climate variable in the climate_table, ready to be used in the stitches function.
+#' @return A list of data frames that match their criteria, one for each run in the climate_table, ready to be used in the stitches function.
 #'
 #' @examples
 #' build_runs(
@@ -31,7 +31,6 @@ build_runs <- function(rcp = NULL,
                        our_gcm = NULL,
                        run_type,
                        start_date,
-                       duration,
                        climate_table,
                        sample_window) {
   
@@ -41,19 +40,19 @@ build_runs <- function(rcp = NULL,
       
   } else if (!is.null(rcp) & !is.null(gcm) & !is.null(sample_cell)) {
     # If rcp, gcm, and sample_cell arguments are provided, find the data frame using find_df() function
-    our_gcm <- find_df(rcp, gcm, sample_cell) %>% add_season()
+    our_gcm <- find_df(rcp, gcm, sample_cell) %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
   } else {
     stop("Either provide rcp, gcm, and sample_cell arguments or provide a dataframe using our_gcm argument.")
   }
   
-  df_list <- list()
+  df_list <- list() #initalizing empty list
   
-  season_list <- season_order(start_date, length(climate_table))
+  season_list <- season_order(start_date, length(climate_table)) #creating a lis to specify which season to find percentiles from 
   
   for (i in 1:length(climate_vars_list)) {
     start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
     
-    df <- sample_window(start_date, duration, our_gcm)
+    df <- sample_window(start_date, sample_window, our_gcm) #Calculating the correct sampling window for each run 
     
     if(run_type == "year") {
       runs <- filter_df(df, climate_table[[i]])

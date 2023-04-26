@@ -16,14 +16,16 @@ library(ggrepel)
 
 ```{r}
 caladaptpolygons <- ca_locagrid_geom()
+test <- ca_example_apireq(x = 5)
 
 map <- leaflet() %>%
   addTiles() %>%
-  addPolygons(data = caladaptpolygons,
+  addPolygons(data = test,
              label = ~id,  # Display the id column as label
              labelOptions = labelOptions())
              
 map
+
              
 ```
 
@@ -60,3 +62,19 @@ mendocino_cap <- ca_loc_aoipreset(type = "counties", idfld = "fips", idval = "06
 plot(mendocino_cap)
 ```
 
+
+```{r}
+lrec_tasmax_prj_cap <- ca_loc_pt(id = 1) %>% 
+  ca_period("day") %>% 
+  ca_gcm(gcms[1:4]) %>% 
+  ca_scenario(c("rcp45", "rcp85")) %>% 
+  ca_cvar("tasmax") %>% 
+  ca_years(start = 2080, end = 2099)
+  
+lrec_tasmax_prj_cap %>% ca_preflight()
+```
+
+
+what i'm looking to do:
+- have a way for users to choose grid cells that they want and get all these variables
+- i was thinking that i'd have some sort of map of cal adapt grid cells and then users would choose the grid cells they want and we'd query the api for those grid cells - is that possible because i couldn't see a way to query for ids that even look like this. i also couldn't find relative humidity with this query

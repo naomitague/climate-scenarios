@@ -1,0 +1,103 @@
+---
+title: "Creating Climate Scenarios Workflow"
+author: "Fire Futures"
+date: "2023-04-25"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(strex)
+library(tidyverse)
+library(lubridate)
+library(purrr)
+```
+
+This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
+
+#1. Cal-Adapt cleaning steps ... if you have all of the data downloaded from the cal-adapt website
+```{r}
+source("/capstone/firefutures/data_cleaning/cal_adapt_4models_allscenarios.R")
+```
+
+Alternatively, use CalAdaptR API or read in your own file in this format:
+
+******
+FORMAT
+******
+
+#2 Building runs 
+
+Sourcing all of the functions in the build-runs workflow 
+```{r}
+# Get list of files in the directory
+files <- list.files("./build_runs-functions", full.names = TRUE)
+
+# Source all files using lapply
+lapply(files, source)
+```
+
+A. Accessing unfiltered data frame from 1950-2100:
+If you used the data cleaning step above & have multiple files in your global environment in this format: model_rcp#_cell# ("MIROC5_rcp45_2")
+
+```{r}
+dat <- find_df(45, "MIROC5", 2) 
+
+head(dat)
+```
+
+B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. 
+
+If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1
+(? fix the function to allow null value ?) 
+
+```{r, Example Percentile Table}
+climate_vars_list <- list(
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.1, .1, .1),
+    upper = c(.99, .99, .99)
+  ),
+  data.frame(
+    variable = c('min_temp'),
+    lower = c(.55),
+    upper = c(.85)
+  ),
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.2, .2, .6),
+    upper = c(.80, .80, .80)
+  ),
+  data.frame(
+    variable = c('wind', 'precip', 'max_temp'),
+    lower = c(.25, .25, .65),
+    upper = c(.75, .75, .75)
+  ),
+  data.frame(
+    variable = c('wind'),
+    lower = (0),
+    upper = (1) #ALL RUNS IN SAMPLE WINDOW 
+  )
+)
+```
+
+Finding Runs Based on Years: Here we will use the build_runs function and specify all of the information we want...
+Instead of specifying rcp, gcm and sample cell you can specify a data frame (our_gcm = dat)
+```{r}
+run_samples <<-
+  build_runs(
+    rcp = 45, #45 or 85
+    gcm = "MIROC5", #which of the four priority models
+    sample_cell = 2, #which cal-adapt gird cell
+    start_date = '04/07/2023', #first year in the time series 
+    sample_window = 10, #number of years below and above the run start date we'd like to filter for
+    climate_table = climate_vars_list, #this is the list we defined above
+    run_type = "season") #year or season. seasons defined in the build_runs function
+
+head(run_samples)
+```
+
+
+
+
+

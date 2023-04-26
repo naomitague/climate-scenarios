@@ -1,9 +1,83 @@
+
+
+# Erica's Code:
+# Output from randomly_select.R
+# NEED input of grid_number for naming
+# Currently not automated to loop through all selected grids
+
+######################## Stitch as new df ----------
+
+# Cutting selections BY YEAR-------------------------
+# Cut each year from the climate model dataframe and stitch together
+# Next problem: how to loop through EACH grid cell and add grid cell number
+
+
+
+### BY SEASON OR YEAR -----
+cut_and_stitch <- function(series_selection = unlist(sample_grid_series),
+                           grid_number,
+                           rcp = 45,
+                           gcm = "MIROC5",
+                           sample_cell = 2) { # vic modified inputs
+  
+  # finds the gcm for each grid cell
+  our_gcm <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified
+  
+  # Empty data frame with column names
+  col_names <- colnames(our_gcm)
+  combined_cut_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+  colnames(combined_cut_model) <- col_names
+  
+  # Check if series_selection is by season or year
+  if(all(is.numeric(series_selection))) {
+    
+    # YEARS: Loop through, select range by time and cut and save
+    for (i in series_selection) {
+      new_cut <- our_gcm[which(our_gcm$water_year == i), ]
+      
+      # Add this cut to the existing dataframe for all cuts
+      combined_cut_model <- rbind(combined_cut_model, new_cut)
+      
+    } # END LOOP
+    
+  } else {
+    
+    # SEASONS: Loop through, select range by time and cut and save
+    for (i in season_selection) {
+      season_year <- strsplit(i, "_")
+      wet_dry <- season_year[[1]][1]
+      year <- season_year[[1]][2]
+      new_cut <- our_gcm[which(our_gcm$season == wet_dry & our_gcm$water_year == year), ]
+      
+      # Add this cut to the existing dataframe for all cuts
+      combined_cut_model <- rbind(combined_cut_model, new_cut)
+      
+    } # END LOOP
+    
+  } # END IF
+  
+  
+  
+  # Name file with model and grid number
+  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number) # vic modified
+  
+  # Assign the resulting list to a variable in the global environment
+  assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
+  
+  #return(combined_cut_model) # vic modified
+}
+
+
+
+
+## Vics Code:
+
 # inputs: 
-  # sample_cell: sampling grid cell, 
-  # all_grid_cells: all grid cells of interest. this comes from the shiny app selections after looking at the caladapt api map
-  # sample_grid_series: the years or seasons/years for the sample grid cell that were used in the random selection based off of the filtered criteria
-  # gcm: which model we used
-  # rcp: which emissions scenario we used
+# sample_cell: sampling grid cell, 
+# all_grid_cells: all grid cells of interest. this comes from the shiny app selections after looking at the caladapt api map
+# sample_grid_series: the years or seasons/years for the sample grid cell that were used in the random selection based off of the filtered criteria
+# gcm: which model we used
+# rcp: which emissions scenario we used
 
 # 1) sees which model we're using and if we've stitched by seasons or years in the sampling grid cell and 
 # 2) for each grid cell: grabs those same run_types during the same time periods and models for all the other grid cell data frames
@@ -14,16 +88,15 @@
 # this will be user input in the shiny app:
 ui_grid_cells <- c(1,2)
 
-getAllGridCells <- function(all_grid_cells, year_selection, our_gcm) {
+getAllGridCells <- function(all_grid_cells) {
   
-  for(i in length(ui_grid_cells)) {
+  for(i in seq_along(ui_grid_cells)) {
     
-    cut_and_stitch(our_gcm = our_gcm, 
-                   year_selection = year_selection, 
-                   grid_number = all_grid_cells[i])
+    cut_and_stitch(grid_number = all_grid_cells[i])
     
   }
   
 }
 
-getAllGridCells(all_grid_cells = ui_grid_cells, year_selection = sample_grid_series, our_gcm = our_gcm)
+getAllGridCells(all_grid_cells = ui_grid_cells)
+

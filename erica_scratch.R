@@ -249,3 +249,281 @@ cut_and_stitch <- function(our_gcm = our_gcm,
 cut_and_stitch(our_gcm = our_gcm, 
                year_selection = (sample_grid_series), 
                grid_number = 3)
+
+
+#####################
+# Stitch as new df ----------
+#####################
+
+
+# NEED TO DO -----
+# Naming the file by the original selected model name
+# NEED input of grid_number for naming
+# Automate to loop through all selected grids
+
+
+# INPUTS -----
+# our_gcm from build_runs.R function
+# sample_grid_series from randomly_select.R function
+# grid_number from larger loop, still need to figure out saving this list to loop through
+
+
+# FUNCTION -----
+cut_and_stitch <- function(our_gcm = our_gcm,
+                           series_selection = unlist(sample_grid_series),
+                           grid_number) { # grid_number is placeholder, 
+  # will need to pull out from grid cells to name
+  
+  # Empty data frame with column names
+  col_names <- colnames(our_gcm)
+  combined_cut_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+  colnames(combined_cut_model) <- col_names
+  
+  # Check if series_selection is by year or season_year
+  if(all(is.numeric(series_selection))) {
+    
+    # YEARS: Loop through, select range by time and cut and save
+    for (i in series_selection) {
+      new_cut <- our_gcm[which(our_gcm$water_year == i), ]
+      
+      # Add this cut to the existing dataframe for all cuts
+      combined_cut_model <- rbind(combined_cut_model, new_cut)
+      
+    } # END LOOP
+    
+  } else {
+    
+    # SEASONS: Loop through, select range by time and cut and save
+    for (i in series_selection) {
+      season_year <- strsplit(i, "_")
+      wet_dry <- season_year[[1]][1]
+      year <- season_year[[1]][2]
+      new_cut <- our_gcm[which(our_gcm$season == wet_dry & our_gcm$water_year == year), ]
+      
+      # Add this cut to the existing dataframe for all cuts
+      combined_cut_model <- rbind(combined_cut_model, new_cut)
+      
+    } # END LOOP
+    
+  } # END IF
+  
+  
+  
+  # Name file with model and grid number
+  model_name <- deparse(substitute(our_gcm))  # NEED TO PULL OUT ORIGINAL NAME
+  grid_name_formatted <- paste0(str_to_title(model_name), "_grid_", grid_number)
+  
+  # Assign the resulting list to a variable in the global environment
+  assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
+  
+  return(combined_cut_model)
+}
+
+# Output: file: CanESM2_rcp45_grid_42
+
+# TEST
+cut_and_stitch(our_gcm = our_gcm, 
+               # year_selection = sample_grid_series, 
+               grid_number = 3)
+
+
+###################
+# Convert to time series-----
+###################
+
+# NEXT STEPS ----
+# how to pull out NAME from cut_and_stitch output file to use as input here instead of our_gcm
+## Answer: combine functions??
+
+# INPUTS ----
+# date output: start_date
+# 
+
+# FUNCTION ----
+convert_time_series <- function(start_year, start_month, start_day, file_name, our_gcm = our_gcm) {
+  
+  # Create folder for time series files with shared name
+  folder_name <- paste0(grid_name_formatted, "_time_series")
+  dir.create(folder_name, showWarnings = FALSE)
+  
+  ##### LEAP YEAR #################
+  # ADD loop with start_date to add in/delete leap year day
+  
+  # LIST expected year lengths with start_date and lubridate::leap_year
+  # COMPARE expected year length [i] and actual year length [i]
+  # IF expected[i] == actual[i], continue
+  # IF expected[i] > actual[i], add Feb 29
+  # IF expected[i] < actual[i], remove row Feb 29
+  
+  # if year / 4 remainder = 0, then leap year
+  # if input year =/ expected leap year then....
+  # Cut out a day or add a day for leap year
+  # IF extra day, delete Feb 29
+  # IF short a day, repeat the previous day or average between previous/following day on Feb 29
+  
+  
+  # MAKE SURE every 4th year is a leap year
+  # Total days of every 4 years matches expected
+  
+  
+  # LOOP tied together file type and column name
+  file_type <- c(".tmax", ".tmin", ".rain", ".relative_humidity_max", ".relative_humidity_min", ".wind")
+  col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
+  #col_names <- c("max_temp_1", "min_temp_1", "precip_1", "max_humidity_1", "min_humidity_1", "wind_1")
+  #col_names <- c("max_temp_2", "min_temp_2", "precip_2", "max_humidity_2", "min_humidity_2", "wind_2")
+  # Currently multiple col_names because of the format of the dataframes, but ultimate plan is to separate by grid so they will be without the _num
+  
+  for (i in seq_along(file_type)) {
+    # Construct file name with proper extension
+    file_name <- file.path(folder_name, paste0(grid_name_formatted, file_type[i]))
+    
+    # Construct top line of file
+    top_of_file <- sprintf("%d %d %d 1", start_year, start_month, start_day)
+    
+    # Write top line of file
+    write.table(top_of_file, file = file_name, row.names = F, col.names = F, quote = F)
+    
+    # Write variable data to file, appending to top line
+    write.table(our_gcm[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
+    # NEEDS TO BE NOT our_gcm but the OUTPUT of cut_and_stitch
+  }
+}
+
+
+# TEST
+convert_time_series(1990, 08, 14, "new_name", our_gcm = our_gcm)
+
+
+# LEAP YEARS -------------------
+
+# New idea:
+# Remove ALL Feb 29
+# For every x rows (total of 4 years 365x4) add a row
+
+### OLD idea:
+# ADD loop with start_date to add in/delete leap year day
+# inputs we already have
+series_selection <- unlist(sample_grid_series)
+start_year <- year(start_date)
+
+# LIST if leap year or not with lubridate::leap_year
+end_date <- start_date + years(100)
+dates <- seq(start_date, end_date, by = "years")
+is_leap <- leap_year(year(dates))
+expected <- ifelse(is_leap, 366, 365)
+
+
+# IF by year
+actual <- leap_year(series_selection)
+
+# Will be even more complicated with season??
+
+# COMPARE expected year length [i] and actual year length [i]
+for (i in expected) {
+  # IF expected[i] == actual[i], continue
+  if(expected[i] == actual[i]){
+    #continue
+  }
+  # IF expected[i] > actual[i], add Feb 29
+  if(expected[i] > actual[i]){
+    # Add Feb 29 with average from day before/after
+  }
+  # IF expected[i] < actual[i], remove row Feb 29
+  if(expected[i] < actual[i]){
+    # remove Feb 29
+  }
+  
+  
+} # END for loop
+
+
+# if year / 4 remainder = 0, then leap year
+# if input year =/ expected leap year then....
+# Cut out a day or add a day for leap year
+# IF extra day, delete Feb 29
+# IF short a day, repeat the previous day or average between previous/following day on Feb 29
+
+
+# MAKE SURE every 4th year is a leap year
+# Total days of every 4 years matches expected
+
+
+
+# CHAT GPT GUESS BELOW:
+# Determine if start year is a leap year
+is_leap_year <- ifelse(start_year %% 4 == 0 & (start_year %% 100 != 0 | start_year %% 400 == 0), TRUE, FALSE)
+
+# Determine number of days in the year
+days_in_year <- ifelse(is_leap_year, 366, 365)
+
+# Create a sequence of dates
+dates <- seq(as.Date(paste(start_year, start_month, start_day, sep = "-")), 
+             by = "day", 
+             length.out = days_in_year)
+
+# Loop through the dates and add leap year day if needed
+for (i in seq_along(dates)) {
+  # Determine if current year is a leap year
+  current_year <- year(dates[i])
+  is_leap_year <- ifelse(current_year %% 4 == 0 & (current_year %% 100 != 0 | current_year %% 400 == 0), TRUE, FALSE)
+  
+  # Add leap year day if current date is Feb 29 and current year is a leap year
+  if (month(dates[i]) == 2 & day(dates[i]) == 29 & is_leap_year) {
+    new_day <- lubridate::ymd(paste0(year(dates[i]), "-03-01"))
+    new_days <- rep.int(new_day, 1)
+    new_data <- data.frame(Date = new_days, Data = NA_real_)
+    new_data$Data[1] <- mean(c(as.numeric(data[i - 1, 2]), as.numeric(data[i + 1, 2])))
+    data <- rbind(data[1:i, ], new_data, data[(i+1):nrow(data), ])
+    dates <- as.Date(data$Date)
+    i <- i + 1
+    
+    # Delete Feb 29 if current year is not a leap year
+  } else if (month(dates[i]) == 2 & day(dates[i]) == 29 & !is_leap_year) {
+    data <- data[-i, ]
+    dates <- as.Date(data$Date)
+    n <- n - 1
+    i <- i - 1
+    
+    # Add or remove a day if current year has a day added or removed
+  } else if (is_added_day | is_removed_day) {
+    if (is_added_day) {
+      new_day <- lubridate::ymd(paste0(year(dates[i]), "-", month(dates[i]), "-", day(dates[i]) + 1))
+      new_days <- rep.int(new_day, 1)
+      new_data <- data.frame(Date = new_days, Data = NA_real_)
+      new_data$Data[1] <- mean(c(as.numeric(data[i, 2]), as.numeric(data[i + 1, 2])))
+      data <- rbind(data[1:i, ], new_data, data[(i+1):nrow(data), ])
+      dates <- as.Date(data$Date)
+      i <- i + 1
+    } else {
+      data <- data[-i, ]
+      dates <- as.Date(data$Date)
+      n <- n - 1
+      i <- i - 1
+    }
+  }
+}
+
+####################
+# Loop through grid cells --------------
+####################
+
+# save selected grid cells
+# for each grid cell....
+# Loop through each of sample_grid_series for each of the selected grids in cut_stitch_function
+# Loop through convert_time_series for each grid cell
+
+# need a function to save the selected_grids
+selected_grids <- list() # grid_cell_dataframe names?
+grid_number <- list() # how to connect selected_grids and grid_number? Or pull out the number for name?
+
+for(i in seq_along(selected_grids)) {
+  
+  grid_number <- i
+  grid_name_formatted <- paste0("grid_", grid_number)
+  
+  # loop through cut and stitch to time series
+  cut_and_stitch_ts(our_gcm = selected_grids[i], # Pull out name of next grid cell
+                 series_selection = unlist(sample_grid_series),
+                 start_date,
+                 grid_number = grid_number[i])
+}

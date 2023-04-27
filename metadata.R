@@ -44,33 +44,29 @@ get_metadata <- function(run_type = run_type,
   # still need: all_cells, season definitions, scenario duration, available samples, desired_samples, historical_extremes included y/n, calibration included y/n
   
   # make an empty dataframe with all the columns we need
-  metadata <- data.frame()
-  #colnames(metadata) <- c("col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15")
-  
-  #
+  metadata <- data.frame(matrix(nrow = 0, ncol = 15))
+  colnames(metadata) <- c("run_type", "rcp", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15")
   
   # add in all the columns we need
   
     # from the build_runs() function:
-  metadata$run_type = run_type
+  metadata$rcp = rcp
     
   
     # from the climate table:
-    run
-    precip_lwr
-    precip_upr
-    mintemp_lwr
-    mintemp_upr
-    maxtemp_lwr
-    maxtemp_upr
-    minrh_lwr
-    minrh_upr
-    maxrh_lwr
-    maxrh_upr
-    notes
+  #  run
+  #  precip_lwr
+  #  precip_upr
+  #  mintemp_lwr
+  #  mintemp_upr
+  #  maxtemp_lwr
+  #  maxtemp_upr
+   # minrh_lwr
+   # minrh_upr
+   # maxrh_lwr
+   # maxrh_upr
+   # notes
   
   # download in the root folder
   
 }
-
-formals(build_runs)

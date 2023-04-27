@@ -247,19 +247,27 @@ getAllGridCells(all_grid_cells = ui_grid_cells)
 
 
 
+
+
+
 # erica's 3rd function
 # FUNCTION -----
-cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need to loop per grid
-                          series_selection = unlist(sample_grid_series),
-                          start_date,
-                          duration, # WHAT IS THIS CALLED
-                          grid_number) { # grid_number is placeholder, 
+cut_stitch_ts <- function(#model_selection = our_gcm, # dataframe will also need to loop per grid
+  series_selection = unlist(sample_grid_series),
+  start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
+  duration = 5, # WHAT IS THIS CALLED # vic modified
+  grid_number,
+  rcp = 45, #vic added
+  gcm = "MIROC5") { #vic added
   # will need to pull out from grid cells to name
+  
+  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
+  model_selection <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified. may want to relabel sample_cell in the find_df func
+  
   
   # CREATE FOLDER -----
   # Name files with model and grid number
-  model_name <- deparse(substitute(model_selection))  # NEED TO PULL OUT ORIGINAL NAME
-  grid_name_formatted <- paste0(str_to_title(model_name), "_grid_", grid_number)
+  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number) # vic modified
   
   # For new .csv and time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")
@@ -356,15 +364,26 @@ cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need 
     write.table(combined_cut_model[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
   }
 }
+# vics:
+ui_grid_cells <- c(1)
+
+getAllGridCells <- function(all_grid_cells) {
+  
+  for(i in seq_along(ui_grid_cells)) {
+    
+    cut_stitch_ts(grid_number = all_grid_cells[i])
+    
+  }
+  
+}
+
+getAllGridCells(all_grid_cells = ui_grid_cells)
 
 
-# TEST
-duration = 5
-start_date <- as.Date("2006-01-01")
-cut_stitch_ts(
-  start_date = start_date,
-  grid_number = 2,
-  duration = duration)
+
+
+
+
 
 
 

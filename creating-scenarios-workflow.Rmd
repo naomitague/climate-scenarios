@@ -122,7 +122,21 @@ run_samples <<-
 head(run_samples)
 ```
 
+Randomly Select
+Takes the above list of matching options and randomly selects one of each
+```{r}
+source("/capstone/firefutures/climate-scenarios/randomly_select.R")
+randomly_select(run_samples = run_samples)
+```
 
+
+Build the scenarios for each grid cell, convert to time series
+```{r}
+source("/capstone/firefutures/climate-scenarios/get_all_grid_cells_function.R")
+
+ui_grid_cells <- c(1,2) # Select all grid cells
+get_all_grid_cells_function(ui_grid_cells)
+```
 
 
 

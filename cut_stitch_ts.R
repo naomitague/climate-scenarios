@@ -15,23 +15,36 @@
 
 
 
-# LOOP THROUGH ALL GRID CELLS
-grid_cells <- list() # Will be named for all grid cells downloaded
+grid_cells <- list(MIROC5_rcp45_2) # Will be named for all grid cells downloaded
 
-for(i in grid_cells) {
-  cut_stitch_ts(model_selection = i)
+get_all_grid_cells <- function(grid_cells = grid_cells) {
+  for(i in grid_cells) {
+    cut_stitch_ts(model_selection = i)
+  }
 }
-
 
 # FUNCTION -----
 cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
-                          start_date = start_date) {
-                          
+                          start_date = start_date, # global variable
+                          #start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
+                          grid_number,
+                          rcp = ui_rcp, #45, #vic added
+                          gcm = ui_gcm) #"MIROC5") { #vic added
+  # will need to pull out from grid cells to name) 
+  {
+  
+  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
+  model_selection <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified. may want to relabel sample_cell in the find_df func
+  
+    
   # CREATE FOLDER -----
   # Name files with model and grid number
-  model_name <- deparse(substitute(model_selection)) # This is to pull the name out from the dataframe
-  grid_name_formatted <- paste0(str_to_title(model_name))
+  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number) # vic modified
+  
+  # Name files with model and grid number
+  #model_name <- deparse(substitute(model_selection)) # This is to pull the name out from the dataframe
+  #grid_name_formatted <- paste0(str_to_title(model_name))
   
   # For new .csv and time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")

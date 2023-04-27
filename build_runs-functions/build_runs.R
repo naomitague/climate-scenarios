@@ -39,7 +39,7 @@ build_runs <- function(rcp = NULL,
   gcm <<- gcm
   sample_cell <<- sample_cell
   our_gcm <<- our_gcm
-  run_type <<-
+  run_type <<- run_type
   start_date <<- start_date
   climate_table <<- climate_table
   sample_window <<- sample_window
@@ -62,7 +62,7 @@ build_runs <- function(rcp = NULL,
   for (i in 1:length(climate_vars_list)) {
     start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
     
-    df <- sample_window(start_date, sample_window, our_gcm) #Calculating the correct sampling window for each run 
+    df <- find_sample_window(start_date, sample_window, our_gcm) #Calculating the correct sampling window for each run 
     
     if(run_type == "year") {
       runs <- filter_df(df, climate_table[[i]])

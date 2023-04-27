@@ -27,7 +27,7 @@
 get_metadata <- function(run_type = run_type,
                          rcp = rcp, 
                          gcm = our_gcm,
-                         climate_table = climate_table,
+                         climate_vars_list = climate_vars_list,
                          sample_cell = sample_cell,
                          all_cells,
                          dry_season_def,
@@ -50,7 +50,7 @@ get_metadata <- function(run_type = run_type,
   metadata <- climate_vars_df %>% 
     mutate(run_type = run_type) %>% # this should be fixed with mal's push
     mutate(rcp = rcp) %>% 
-    mutate(gcm = our_gcm) %>% 
+    mutate(gcm = gcm) %>% 
     mutate(all_cells = '???') %>% # need to add
     mutate(dry_season_def = '???') %>% # need to add
     mutate(wet_season_def = '???') %>% # need to add
@@ -63,25 +63,7 @@ get_metadata <- function(run_type = run_type,
     mutate(calibration_included = 'N')# need to add
   
   View(metadata)
-  
-    # from the build_runs() function:
-  metadata$rcp = rcp
-    
-  
-    # from the climate table:
-  #  run
-  #  precip_lwr
-  #  precip_upr
-  #  mintemp_lwr
-  #  mintemp_upr
-  #  maxtemp_lwr
-  #  maxtemp_upr
-   # minrh_lwr
-   # minrh_upr
-   # maxrh_lwr
-   # maxrh_upr
-   # notes
-  
-  # download in the root folder
+
+  # download in a root folder? or all folders?
   
 }

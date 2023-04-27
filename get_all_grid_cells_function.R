@@ -33,6 +33,7 @@ cut_stitch_ts <- function(#model_selection = our_gcm, # dataframe will also need
     
     # YEARS: Loop through, select range by time and cut and save
     for (i in series_selection) {
+      
       new_cut <- model_selection[which(model_selection$water_year == i), ]
       
       # Add this cut to the existing dataframe for all cuts
@@ -133,7 +134,7 @@ getAllGridCells(all_grid_cells = ui_grid_cells)
 
 
 
-
+# questions vic has: are the years in the random selec function the water years? i think we'd want this since we're subsetting our dataframe by water year.
 
 
 

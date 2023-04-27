@@ -43,11 +43,26 @@ get_metadata <- function(run_type = run_type,
   
   # still need: all_cells, season definitions, scenario duration, available samples, desired_samples, historical_extremes included y/n, calibration included y/n
   
-  # make an empty dataframe with all the columns we need
-  metadata <- data.frame(matrix(nrow = 0, ncol = 15))
-  colnames(metadata) <- c("run_type", "rcp", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15")
-  
+  # make a dataframe with the number of rows that we need which should match the number of runs built in the climate_vars_list
+  climate_vars_df <- do.call(rbind, climate_vars_list) 
+
   # add in all the columns we need
+  metadata <- climate_vars_df %>% 
+    mutate(run_type = run_type) %>% # this should be fixed with mal's push
+    mutate(rcp = rcp) %>% 
+    mutate(gcm = our_gcm) %>% 
+    mutate(all_cells = '???') %>% # need to add
+    mutate(dry_season_def = '???') %>% # need to add
+    mutate(wet_season_def = '???') %>% # need to add
+    mutate(scenario_start_date = start_date) %>% 
+    mutate(scenario_duration = 5) %>% # need to add
+    mutate(sample_window = 50) %>% # need to add
+    mutate(avail_samples = 10) %>% # need to add
+    mutate(desired_samples = 5) %>% # need to add
+    mutate(historical_extremes_incl = 'N') %>% # need to add
+    mutate(calibration_included = 'N')# need to add
+  
+  View(metadata)
   
     # from the build_runs() function:
   metadata$rcp = rcp

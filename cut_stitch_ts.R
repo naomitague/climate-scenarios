@@ -13,20 +13,23 @@
 # start_date
 # grid_number from larger loop, still need to figure out saving this list to loop through
 
+# LOOP THROUGH ALL GRID CELLS
+grid_cells <- list() # Will be named for all grid cells downloaded
 
+for(i in grid_cells) {
+  cut_stitch_ts(model_selection = i)
+}
 
 # FUNCTION -----
-cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need to loop per grid
+cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
-                          start_date,
-                          duration, # WHAT IS THIS CALLED
-                          grid_number) { # grid_number is placeholder, 
-                                         # will need to pull out from grid cells to name
-  
+                          start_date = start_date,
+                          duration = duration) {
+                          
   # CREATE FOLDER -----
   # Name files with model and grid number
-  model_name <- deparse(substitute(model_selection))  # NEED TO PULL OUT ORIGINAL NAME
-  grid_name_formatted <- paste0(str_to_title(model_name), "_grid_", grid_number)
+  model_name <- deparse(substitute(model_selection)) # This is to pull the name out from the dataframe
+  grid_name_formatted <- paste0(str_to_title(model_name))
   
   # For new .csv and time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")
@@ -71,37 +74,72 @@ cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need 
   
   # DEALING WITH UNORDERED LEAP YEAR -----
   # Remove all February 29ths in the dataframe
-  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ] # WORKS
+  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
   
-  # Add here a loop of every 4 years (days)
-  start_year <- year(start_date)
-  end_year <- year(start_date + duration)
-  for (year in start_year:end_year) {
-    if (leap_year(year)) 
-      
-      # Before/after date to average the variable columns
-      before_date <- as.Date(paste0(year, "-02-28")) # WORKS
-      after_date <- as.Date(paste0(year, "-03-01"))
-      
-      # Calculate row to insert
-      insert_row <- data.frame(time = as.Date(paste0(year, "-02-29"))) # WORKS IF LEAP YEAR
-      for (col in names(combined_cut_model[-1])) {
-        
-        insert_row[[col]] <- mean(c(combined_cut_model[combined_cut_model$time == before_date, col],
-                                    combined_cut_model[combined_cut_model$time == after_date, col]))
-      }
-      combined_cut_model <- rbind(combined_cut_model, insert_row)
+  # New new option
+  # Delete TIME column because years are in random order
+  combined_cut_model <- combined_cut_model %>% select(-time)
+  # Create sequence of every 1460 rows (4 years) to add a leap year row
+  leapyears <- seq(from = 1, to = nrow(combined_cut_model), by = 1460)
+  # For every 1460 days rows, add a row
+  for(i in leapyears){
+    combined_cut_model <- combined_cut_model %>% 
+      add_row(max_temp = mean(combined_cut_model$max_temp[i - 1], combined_cut_model$max_temp[i + 1]),
+              precip = 0,
+              max_humidity = mean(combined_cut_model$max_humidity[i-1], combined_cut_model$max_humidity[i+1]),
+              min_humidity = mean(combined_cut_model$min_humidity[i-1], combined_cut_model$min_humidity[i+1]),
+              wind = mean(combined_cut_model$wind[i-1], combined_cut_model$wind[i+1]),
+              min_temp = mean(combined_cut_model$min_temp[i-1], combined_cut_model$min_temp[i+1]),
+              water_year = combined_cut_model$water_year[i-1],
+              .after = i)   # Set location of new row
   }
   
-  # Order dataframe by date for added leap years
-  combined_cut_model <- combined_cut_model[order(combined_cut_model$time), ]
+  # Second attempt:
+  # for(i in seq(from = 1, to = nrow(combined_cut_model), by = 1460)) {
+  #   # Subset for 1460
+  #   chunk <- combined_cut_model[i:min(i+1459), ]
+  #   new_row <- rep(0, ncol(combined_cut_model))
+  #   chunk <- rbind(chunk, new_row)
+  #   
+  #   # Append to new df
+  #   col_names <- colnames(combined_cut_model)
+  #   final_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+  #   colnames(final_model) <- col_names
+  #   final_model <- rbind(final_model, chunk)
+  # } # Problem is can't do AVERAGE of the new day with before/after dates
+  
+  
+  # Original attempt: ERRORS BELOW: Issue 1: the order of the years is already random
+        # Can I loop through to change just the year??
+  # Add here a loop of every 4 years (days)
+  # start_year <- year(start_date)
+  # end_year <- year(start_date + duration)
+  # for (year in start_year:end_year) {
+  #   if (leap_year(year)) 
+  #     
+  #     # Before/after date to average the variable columns
+  #     before_date <- as.Date(paste0(year, "-02-28")) # WORKS
+  #     after_date <- as.Date(paste0(year, "-03-01"))
+  #     
+  #     # Calculate row to insert
+  #     insert_row <- data.frame(time = as.Date(paste0(year, "-02-29"))) # WORKS IF LEAP YEAR
+  #     for (col in names(combined_cut_model[-1])) {
+  #       
+  #       insert_row[[col]] <- mean(c(combined_cut_model[combined_cut_model$time == before_date, col],
+  #                                   combined_cut_model[combined_cut_model$time == after_date, col]))
+  #     }
+  #     combined_cut_model <- rbind(combined_cut_model, insert_row)
+  # }
+  # 
+  # # Order dataframe by date for added leap years
+  # combined_cut_model <- combined_cut_model[order(combined_cut_model$time), ]
+  
   
   # Save final dataframe as a .csv
+  # Removed index, add one??
   write.csv(combined_cut_model, 
             file.path(folder_name, paste0(grid_name_formatted, ".csv")), 
             row.names = FALSE)
-  
-  
   
   # CONVERT TO TIME SERIES -----
   # LOOP tied together file type and column name
@@ -126,10 +164,11 @@ cut_stitch_ts <- function(model_selection = our_gcm, # dataframe will also need 
 
 
 # TEST
+our_gcm
+
 duration = 5
 start_date <- as.Date("2006-01-01")
 cut_stitch_ts(
   start_date = start_date,
-  grid_number = 2,
   duration = duration)
 

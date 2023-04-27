@@ -13,6 +13,8 @@
 # start_date
 # grid_number from larger loop, still need to figure out saving this list to loop through
 
+
+
 # LOOP THROUGH ALL GRID CELLS
 grid_cells <- list() # Will be named for all grid cells downloaded
 
@@ -20,11 +22,11 @@ for(i in grid_cells) {
   cut_stitch_ts(model_selection = i)
 }
 
+
 # FUNCTION -----
 cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
-                          start_date = start_date,
-                          duration = duration) {
+                          start_date = start_date) {
                           
   # CREATE FOLDER -----
   # Name files with model and grid number
@@ -166,9 +168,7 @@ cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes o
 # TEST
 our_gcm
 
-duration = 5
 start_date <- as.Date("2006-01-01")
 cut_stitch_ts(
-  start_date = start_date,
-  duration = duration)
+  start_date = start_date)
 

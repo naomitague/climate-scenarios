@@ -25,7 +25,7 @@
 #' @keywords data manipulation, filtering, sampling
 #'
 #' @export
-sample_window <- function(start_date, sample_window, df) {
+find_sample_window <- function(start_date, sample_window, df) {
   start_date <- as.Date(start_date, format = "%m/%d/%Y") # Convert start_date to date format
   start <- (start_date - years(sample_window)) # Calculate the first year in the sampling window
   end <- (start_date + years(sample_window)) # Calculate the last year in the sampling window

@@ -113,8 +113,8 @@ run_samples <<-
 
 run_samples <<-
   build_runs(
-    our_gcm = dat, #df in correct format 
-    start_date = '04/07/2023', #first year in the time series 
+    our_gcm = dat, #df in correct format
+    start_date = '04/07/2023', #first year in the time series
     sample_window = 10, #number of years below and above the run start date we'd like to filter for
     climate_table = climate_vars_list, #this is the list we defined above
     run_type = "year") #year or season. seasons defined in the build_runs function

@@ -3,15 +3,15 @@
 #' This function filters a data frame based on a climate table and an optional season list.
 #'
 #' @param df Data frame to filter.
-#' @param climate_table Climate table, which is a data frame specifying the climate variable, lower percentile,
+#' @param climate_criteria_table Climate table, which is a data frame specifying the climate variable, lower percentile,
 #' upper percentile, and corresponding thresholds for filtering.
 #' @param season_list Optional season list to filter the data frame by season. Default is NULL.
 #' @return Filtered data frame or a concatenated string of water years and seasons.
 #' @examples
-#' filter_df(df, climate_table, season_list = c("winter", "spring"))
-#' filter_df(df, climate_table)
+#' filter_df(df, climate_criteria_table, season_list = c("winter", "spring"))
+#' filter_df(df, climate_criteria_table)
 #' @export
-filter_df <- function(df, climate_table, season_list = NULL) {
+filter_df <- function(df, climate_criteria_table, season_list = NULL) {
   
   if (!is.null(season_list)) {
     # Group data frame by water year and season, and calculate summary statistics
@@ -22,12 +22,12 @@ filter_df <- function(df, climate_table, season_list = NULL) {
                                                             min_humidity = mean(min_humidity),
                                                             max_humidity = mean(max_humidity))
     
-    for (j in 1:nrow(climate_table)) {
+    for (j in 1:nrow(climate_criteria_table)) {
       df <- df %>% filter(season %in% season_list) # Filter by season list
       
-      climate_var <- climate_table[j, "variable"]
-      lower <- climate_table[j, "lower"] 
-      upper <- climate_table[j, "upper"]
+      climate_var <- climate_criteria_table[j, "variable"]
+      lower <- climate_criteria_table[j, "lower"] 
+      upper <- climate_criteria_table[j, "upper"]
       
       lower_perc <- quantile(df[[climate_var]], lower, na.rm = TRUE) # Calculate lower percentile
       
@@ -46,10 +46,10 @@ filter_df <- function(df, climate_table, season_list = NULL) {
                                                          min_humidity = mean(min_humidity),
                                                          max_humidity = mean(max_humidity))
     
-    for (j in 1:nrow(climate_table)) {
-      climate_var <- climate_table[j, "variable"]
-      lower <- climate_table[j, "lower"] 
-      upper <- climate_table[j, "upper"]
+    for (j in 1:nrow(climate_criteria_table)) {
+      climate_var <- climate_criteria_table[j, "variable"]
+      lower <- climate_criteria_table[j, "lower"] 
+      upper <- climate_criteria_table[j, "upper"]
       
       lower_perc <- quantile(df[[climate_var]], lower, na.rm = TRUE) # Calculate lower percentile
       

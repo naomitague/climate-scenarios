@@ -31,7 +31,7 @@ FORMAT
 Sourcing all of the functions in the build-runs workflow 
 ```{r}
 # Get list of files in the directory
-files <- list.files("./build_runs-functions", full.names = TRUE)
+files <- list.files("./find_matches-functions", full.names = TRUE)
 
 # Source all files using lapply
 lapply(files, source)
@@ -51,10 +51,10 @@ B. Create your table to designate desired percentile filters for each run. Make 
 If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1
 (? fix the function to allow null value ?) 
 
-Run & Notes = Input for metadeta file. 
+Run & Notes = Input for metadeta file
 
 ```{r, Example Percentile Table}
-climate_vars_list <- list(
+criteria_list <- list(
   data.frame(
     run = 'year 1 season 1',
     notes = 'Likely Scenario',
@@ -68,13 +68,6 @@ climate_vars_list <- list(
     variable = c('min_temp'),
     lower = c(.55),
     upper = c(.85)
-  ),
-  data.frame(
-    run = 'year 2 season 1',
-    notes = 'Hot Average',
-    variable = c('wind', 'precip', 'max_temp'),
-    lower = c(.2, .2, .6),
-    upper = c(.80, .80, .80)
   ),
   data.frame(
     run = 'year 2 season 2',
@@ -101,24 +94,28 @@ one specifying gcm, rcp, and sample cell to find associated data
 the other specifying a data frame already in global environment/in correct format 
 
 ```{r finding runs that match climate percentiles}
-run_samples <<-
-  build_runs(
-    rcp = 45, #45 or 85
-    gcm = "MIROC5", #which of the four priority models
-    sample_cell = 2, #which cal-adapt gird cell
-    start_date = '04/07/2023', #first year in the time series 
-    sample_window = 10, #number of years below and above the run start date we'd like to filter for
-    climate_table = climate_vars_list, #this is the list we defined above
-    run_type = "season") #year or season. seasons defined in the build_runs function
+ui_rcp <- 45
+ui_gcm <- 'MIROC5'
+ui_sample_cell <- 2
 
-run_samples <<-
-  build_runs(
-    our_gcm = dat, #df in correct format
-    start_date = '04/07/2023', #first year in the time series
-    sample_window = 10, #number of years below and above the run start date we'd like to filter for
-    climate_table = climate_vars_list, #this is the list we defined above
-    run_type = "year") #year or season. seasons defined in the build_runs function
+ui_base_data <- dat
 
+ui_segment_type <- 'year'
+ui_start_date <- '04/07/2000'
+ui_climate_criteria_table <- criteria_list
+ui_sample_window <- 20
+
+  run_samples <<-
+  find_matches(
+    rcp = ui_rcp, #45 or 85
+    gcm = ui_gcm,
+    sample_cell = ui_sample_cell,
+    start_date = ui_start_date,
+    sample_window = ui_sample_window,
+    climate_criteria_table = ui_climate_criteria_table,
+    segment_type = ui_segment_type,
+  )
+  
 head(run_samples)
 ```
 

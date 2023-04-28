@@ -31,7 +31,7 @@ FORMAT
 Sourcing all of the functions in the build-runs workflow 
 ```{r}
 # Get list of files in the directory
-files <- list.files("./find_matches-functions", full.names = TRUE)
+files <- list.files("./climate-scenarios/find_matches-functions", full.names = TRUE)
 
 # Source all files using lapply
 lapply(files, source)
@@ -44,15 +44,6 @@ If you used the data cleaning step above & have multiple files in your global en
 dat <- find_df(45, "MIROC5", 2) 
 
 head(dat)
-
-wind_threshold = 8
-dat <- dat %>% group_by(wy = water_year) %>% 
-  summarise(wind = sum(wind >= wind_threshold),
-            max_temp = mean(max_temp),
-            min_temp = mean(min_temp),
-            precip = sum(precip),
-            min_humidity = mean(min_humidity),
-            max_humidity = mean(max_humidity))
 ```
 
 B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. 
@@ -63,6 +54,8 @@ If you would like to sample from all available runs, input one climate variable 
 Run & Notes = Input for metadeta file
 
 ```{r, Example Percentile Table}
+#source (REMEMBER TO SOURCE)
+
 criteria_list <- list(
   data.frame(
     run = 'year 1 season 1',
@@ -93,6 +86,8 @@ criteria_list <- list(
     upper = (1) #ALL RUNS IN SAMPLE WINDOW 
   )
 )
+
+criteria_list <- repeat_segment(criteria_list, c(1,2,3,4), 4)
 ```
 
 Finding Runs Based on Years: Here we will use the build_runs function and specify all of the information we want...

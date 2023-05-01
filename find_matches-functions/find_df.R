@@ -18,6 +18,8 @@
 #'
 #' # Extract data for RCP 85, GCM "CNRM_CM5", and sample cell 1
 #' find_df_example <- find_df(85, "CNRM_CM5", 1)
+#' 
+#' 
 
 find_df <- function(rcp, gcm, sample_cell) {
   

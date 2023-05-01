@@ -10,8 +10,9 @@
 #'
 #' @details This function takes a start date, a sample window (in years), and a data frame as input.
 #' It then filters the data frame based on the start date and the sample window, and returns the filtered data frame.
+#' Half of the sampling window before the start date and half after. If there is an odd number entered all years are rounded up. 
 #' If the sample_window argument is NULL, a warning is issued, and the entire data frame is returned.
-#'
+#' 
 #' @examples
 #' # Example usage:
 #' df <- data.frame(time = as.Date(c("01/01/2010", "01/01/2015", "01/01/2020"), format = "%m/%d/%Y"),
@@ -27,8 +28,8 @@
 #' @export
 find_sample_window <- function(start_date, sample_window, df) {
   start_date <- as.Date(start_date, format = "%m/%d/%Y") # Convert start_date to date format
-  start <- (start_date - years(sample_window)) # Calculate the first year in the sampling window
-  end <- (start_date + years(sample_window)) # Calculate the last year in the sampling window
+  start <- (start_date - years(ceiling(sample_window/2))) # Calculate the first year in the sampling window
+  end <- (start_date +  years(ceiling(sample_window/2))) # Calculate the last year in the sampling window
   
   # Check if sample_window argument is not NULL
   if (!is.null(sample_window)) {

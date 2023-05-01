@@ -16,11 +16,12 @@ library(ggrepel)
 
 ```{r}
 caladaptpolygons <- ca_locagrid_geom()
-test <- ca_example_apireq(x = 5)
+test <- ca_aoipreset_geom(aoipreset, quiet = FALSE)
+aoipreset_types
 
 map <- leaflet() %>%
   addTiles() %>%
-  addPolygons(data = test,
+  addPolygons(data = caladaptpolygons,
              label = ~id,  # Display the id column as label
              labelOptions = labelOptions())
              
@@ -40,13 +41,13 @@ allgridcells_climate_data <-
   ca_loc_aoipreset(type = "counties", idfld = "fips", idval = "06045") %>% 
   ca_gcm(c("HadGEM2-ES", "CNRM-CM5", "CanESM2","MIROC5")) %>%     
   ca_scenario(c("historical","rcp45","rcp85")) %>%                               ## select emission scenarios(s)
-  ca_cvar(c("tasmax", "tasmin", "pr", "Tair")) %>%                                          ## select climate variables
+  ca_cvar(c("tasmax", "tasmin")) %>%                                          ## select climate variables
   ca_period("day") %>%                                             ## select a temporal aggregation period
   ca_years(start = 2020, end = 2050)    
 ```
 
 ```{r}
-sac_tasmax_tbl <- allgridcells_climate_data %>% ca_getvals_tbl(quiet = TRUE)
+tbl <- allgridcells_climate_data %>% ca_getvals_tbl(quiet = TRUE)
 head(sac_tasmax_tbl)
 dim(sac_tasmax_tbl)
 ```
@@ -78,3 +79,74 @@ lrec_tasmax_prj_cap %>% ca_preflight()
 what i'm looking to do:
 - have a way for users to choose grid cells that they want and get all these variables
 - i was thinking that i'd have some sort of map of cal adapt grid cells and then users would choose the grid cells they want and we'd query the api for those grid cells - is that possible because i couldn't see a way to query for ids that even look like this. i also couldn't find relative humidity with this query
+
+```{r}
+caladaptpolygons <- ca_locagrid_geom()
+
+# show map
+map <- leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = caladaptpolygons,
+             label = ~id,  # Display the id column as label
+             labelOptions = labelOptions())
+             
+map
+
+# user selects grid cells and rcp and model
+ui_grid_cells <- c(23696, 46896, 46898)
+ui_rcp <- 85
+ui_model <- 'MIROC5'
+
+# map grid cell to a centroid
+centroids_of_interest <- caladaptpolygons %>%
+  filter(id %in% ui_grid_cells) %>% 
+  st_centroid() %>% 
+  st_coordinates() %>% 
+  as.data.frame() %>% 
+  select(X, Y)
+
+#create a loop to grab all the climate variables for the model and rcp of interest. need to name the tables in reference to grid cell id in the list we're looping through. it doesn't matter which is the sample cell at this point. need to make this work for historical data. and test/make sure all the ui model names are the same as the slug model names. look for slugs with "View(ca_catalog_rs())". then ask mal to help get these into the same format that we need for each grid cell.
+
+# wind 
+wind_slug <- paste0('wspeed_day_', ui_model , '_', 'rcp', ui_rcp)
+wind_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(wind_slug)
+wind_tbl <- wind_data %>% ca_getvals_tbl(quiet = TRUE)
+View(wind_tbl)
+
+# min relative humidity
+minrh_slug <- paste0('relhumid-min_day_', ui_model , '_', 'rcp', ui_rcp)
+minrh_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(minrh_slug)
+minrh_tbl <- minrh_data %>% ca_getvals_tbl(quiet = TRUE)
+View(minrh_tbl)
+
+# max relative humidity 
+maxrh_slug <- paste0('relhumid-max_day_', ui_model , '_', 'rcp', ui_rcp)
+maxrh_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(maxrh_slug)
+maxrh_tbl <- maxrh_data %>% ca_getvals_tbl(quiet = TRUE)
+View(maxrh_tbl)
+
+# min temperature
+mintemp_slug <- paste0('tasmin_day_', ui_model , '_', 'rcp', ui_rcp)
+mintemp_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(mintemp_slug)
+mintemp_tbl <- mintemp_data %>% ca_getvals_tbl(quiet = TRUE)
+View(mintemp_tbl)
+
+# max temperature
+maxtemp_slug <- paste0('tasmax_day_', ui_model , '_', 'rcp', ui_rcp)
+maxtemp_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(maxtemp_slug)
+maxtemp_tbl <- maxtemp_data %>% ca_getvals_tbl(quiet = TRUE)
+View(maxtemp_tbl)
+
+# precipitation 
+pr_slug <- paste0('pr_day_', ui_model , '_', 'rcp', ui_rcp)
+pr_data <- ca_loc_pt(coords = centroids_of_interest[1,]) %>% 
+  ca_slug(pr_slug)
+pr_tbl <- pr_data %>% ca_getvals_tbl(quiet = TRUE)
+View(pr_tbl)
+```
+

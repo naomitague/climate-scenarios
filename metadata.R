@@ -21,6 +21,7 @@
   # desired resamples
   # historical extremes included (Y/N)
   # calibration included (Y/N)
+  # probability 
 
 # download itself in the root folder of the data download
 

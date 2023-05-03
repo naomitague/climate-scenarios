@@ -73,9 +73,9 @@ cut_stitch_ts <- function(model_selection = base_data, # loop through dataframes
     
     # SEASONS: Loop through, select range by time and cut and save
     for (i in series_selection) {
-      season_year <- strsplit(i, "_")
-      wet_dry <- season_year[[1]][1]
-      year <- season_year[[1]][2]
+      season_year <- strsplit(i, " ")
+      year <- season_year[[1]][1]
+      wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
       

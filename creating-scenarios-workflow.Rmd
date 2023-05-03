@@ -70,7 +70,7 @@ criteria_list <- list(
     run = 'year 2 season 2',
     notes = 'Average: wind, precip, max_temp',
     variable = c('wind', 'precip', 'max_temp'),
-    lower = c(.25, .25, .65),
+    lower = c(.25, .25, .15),
     upper = c(.75, .75, .75)
   ),
   data.frame(
@@ -126,7 +126,7 @@ head(run_samples)
 Randomly Select
 Takes the above list of matching options and randomly selects one of each
 ```{r}
-randomly_select(run_samples = run_samples)
+randomly_select(run_samples = run_samples) #This will only work if all segments have something to sample from
 ```
 
 

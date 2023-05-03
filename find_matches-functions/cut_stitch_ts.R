@@ -8,7 +8,7 @@
 # Automate to loop through all selected grids
 
 # INPUTS -----
-# our_gcm from build_runs.R function
+# base_data from build_runs.R function
 # sample_grid_series from randomly_select.R function
 # start_date
 # grid_number from larger loop, still need to figure out saving this list to loop through
@@ -24,7 +24,7 @@
 #}
 
 # FUNCTION -----
-cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes of each grid cell
+cut_stitch_ts <- function(model_selection = base_data, # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
                           start_date = start_date, # global variable
                           #start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
@@ -91,7 +91,6 @@ cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes o
   # Remove all February 29ths in the dataframe
   combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
   
-  # New new option
   # Delete TIME column because years are in random order
   combined_cut_model <- combined_cut_model %>% select(-time)
   # Create sequence of every 1460 rows (4 years) to add a leap year row
@@ -109,49 +108,8 @@ cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes o
               .after = i)   # Set location of new row
   }
   
-  # Second attempt:
-  # for(i in seq(from = 1, to = nrow(combined_cut_model), by = 1460)) {
-  #   # Subset for 1460
-  #   chunk <- combined_cut_model[i:min(i+1459), ]
-  #   new_row <- rep(0, ncol(combined_cut_model))
-  #   chunk <- rbind(chunk, new_row)
-  #   
-  #   # Append to new df
-  #   col_names <- colnames(combined_cut_model)
-  #   final_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
-  #   colnames(final_model) <- col_names
-  #   final_model <- rbind(final_model, chunk)
-  # } # Problem is can't do AVERAGE of the new day with before/after dates
-  
-  
-  # Original attempt: ERRORS BELOW: Issue 1: the order of the years is already random
-        # Can I loop through to change just the year??
-  # Add here a loop of every 4 years (days)
-  # start_year <- year(start_date)
-  # end_year <- year(start_date + duration)
-  # for (year in start_year:end_year) {
-  #   if (leap_year(year)) 
-  #     
-  #     # Before/after date to average the variable columns
-  #     before_date <- as.Date(paste0(year, "-02-28")) # WORKS
-  #     after_date <- as.Date(paste0(year, "-03-01"))
-  #     
-  #     # Calculate row to insert
-  #     insert_row <- data.frame(time = as.Date(paste0(year, "-02-29"))) # WORKS IF LEAP YEAR
-  #     for (col in names(combined_cut_model[-1])) {
-  #       
-  #       insert_row[[col]] <- mean(c(combined_cut_model[combined_cut_model$time == before_date, col],
-  #                                   combined_cut_model[combined_cut_model$time == after_date, col]))
-  #     }
-  #     combined_cut_model <- rbind(combined_cut_model, insert_row)
-  # }
-  # 
-  # # Order dataframe by date for added leap years
-  # combined_cut_model <- combined_cut_model[order(combined_cut_model$time), ]
-  
   
   # Save final dataframe as a .csv
-  # Removed index, add one??
   write.csv(combined_cut_model, 
             file.path(folder_name, paste0(grid_name_formatted, ".csv")), 
             row.names = FALSE)
@@ -176,12 +134,3 @@ cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes o
     write.table(combined_cut_model[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
   }
 }
-
-
-# TEST
-our_gcm
-
-start_date <- as.Date("2006-01-01")
-cut_stitch_ts(
-  start_date = start_date)
-

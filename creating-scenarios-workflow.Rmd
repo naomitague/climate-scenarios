@@ -19,9 +19,13 @@ Sourcing all of the functions needed to build scenarios & importing example data
 ```{r}
 dat <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) #sourcing example cleaned data 
 
+<<<<<<< HEAD
 dat2 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC5_rcp45_1"))
 
 setwd("/Users/mallorygiesie/github/climate-scenarios/build_functions")
+=======
+setwd(".../climate-scenarios/build_functions")
+>>>>>>> dab4afd347f4c74bc8582300ccbc552c95537086
 
 r_files <- list.files(pattern = "\\.R$")
 
@@ -72,7 +76,7 @@ criteria_list <- list(
     run = 'year 2 season 2',
     notes = 'Average: wind, precip, max_temp',
     variable = c('wind', 'precip', 'max_temp'),
-    lower = c(.25, .25, .65),
+    lower = c(.25, .25, .15),
     upper = c(.75, .75, .75)
   ),
   data.frame(
@@ -128,7 +132,7 @@ head(run_samples)
 Randomly Select
 Takes the above list of matching options and randomly selects one of each
 ```{r}
-randomly_select(run_samples = run_samples)
+randomly_select(run_samples = run_samples) #This will only work if all segments have something to sample from
 ```
 
 

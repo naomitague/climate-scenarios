@@ -19,6 +19,8 @@ Sourcing all of the functions needed to build scenarios & importing example data
 ```{r}
 dat <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) #sourcing example cleaned data 
 
+dat2 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC5_rcp45_1"))
+
 setwd("/Users/mallorygiesie/github/climate-scenarios/build_functions")
 
 r_files <- list.files(pattern = "\\.R$")

@@ -15,13 +15,13 @@
 
 
 
-grid_cells <- list(MIROC5_rcp45_2) # Will be named for all grid cells downloaded
+#grid_cells <- list(MIROC5_rcp45_2) # Will be named for all grid cells downloaded
 
-get_all_grid_cells <- function(grid_cells = grid_cells) {
-  for(i in grid_cells) {
-    cut_stitch_ts(model_selection = i)
-  }
-}
+#get_all_grid_cells <- function(grid_cells = grid_cells) {
+#  for(i in grid_cells) {
+#    cut_stitch_ts(model_selection = i)
+#  }
+#}
 
 # FUNCTION -----
 cut_stitch_ts <- function(model_selection = our_gcm, # loop through dataframes of each grid cell

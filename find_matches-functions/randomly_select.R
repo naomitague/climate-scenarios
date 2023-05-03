@@ -8,7 +8,7 @@
 
 
 # Using Mallory's output
-run_samples
+# run_samples
 
 # Function to randomly select out of matching yearly options---------
 randomly_select <- function(run_samples = run_samples) {

@@ -582,7 +582,7 @@ df <- data.frame(date = dates, col1 = runif(length(dates)), col2 = rnorm(length(
 for (year in start_year:end_year) {
   
   # check if the year is a leap year
-  if (leap_year(year) =) {
+  if (leap_year(year) = TRUE) {
     
     # get the date before and after February 29th
     before_date <- as.Date(paste0(year, "-02-28"))

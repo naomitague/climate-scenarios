@@ -4,58 +4,53 @@ author: "Fire Futures"
 date: "2023-04-25"
 output: html_document
 ---
-
 ```{r}
 knitr::opts_chunk$set(echo = TRUE)
 library(strex)
 library(tidyverse)
 library(lubridate)
 library(purrr)
+library(here)
 ```
 
 This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
 
-#1. Cal-Adapt cleaning steps ... if you have all of the data downloaded from the cal-adapt website
+Sourcing all of the functions needed to build scenarios & importing example data. All functions are in the build_runs-functions folder of the climate-scenarios repository
 ```{r}
-source("/capstone/firefutures/data_cleaning/cal_adapt_4models_allscenarios.R")
+dat <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) #sourcing example cleaned data 
+
+setwd("/Users/mallorygiesie/github/climate-scenarios/build_functions")
+
+r_files <- list.files(pattern = "\\.R$")
+
+for (file in r_files) {
+  source(file)
+}
 ```
 
-Alternatively, use CalAdaptR API or read in your own file in this format:
+A. Accessing the base unfiltered data frame from 1950-2100:
 
-******
-FORMAT
-******
-
-#2 Building runs 
-
-Sourcing all of the functions in the build-runs workflow 
+- If you used the data cleaning step above & have multiple files in your global environment in this format: model_rcp#_cell# ("MIROC5_rcp45_2") 
 ```{r}
-# Get list of files in the directory
-files <- list.files("./climate-scenarios/find_matches-functions", full.names = TRUE)
-
-# Source all files using lapply
-lapply(files, source)
+# dat <- find_df(45, "MIROC5", 2)
+# 
+# head(dat)
 ```
 
-A. Accessing unfiltered data frame from 1950-2100:
-If you used the data cleaning step above & have multiple files in your global environment in this format: model_rcp#_cell# ("MIROC5_rcp45_2")
-
+- If you imported your data frame in the correct format:
 ```{r}
-dat <- find_df(45, "MIROC5", 2) 
-
-head(dat)
+dat <- dat %>% mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time)))
 ```
 
 B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. 
 
-If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1
-(? fix the function to allow null value ?) 
+-If you would like to sample from all available runs, input one climate variable and designate your lower and upper percentiles to be 0 & 1
 
-Run & Notes = Input for metadeta file
+-Run & Notes = Input for metadeta file
+
+-repeat_segment allows you to repeat any of the climate criteria (or a few in order) your desired amount of times
 
 ```{r, Example Percentile Table}
-#source (REMEMBER TO SOURCE)
-
 criteria_list <- list(
   data.frame(
     run = 'year 1 season 1',
@@ -87,18 +82,19 @@ criteria_list <- list(
   )
 )
 
-criteria_list <- repeat_segment(criteria_list, c(1,2,3,4), 4)
+criteria_list <- repeat_segments(criteria_list, c(1,2,3,4), 4) #repeat 1-4 four times 
 ```
 
-Finding Runs Based on Years: Here we will use the build_runs function and specify all of the information we want...
-Instead of specifying rcp, gcm and sample cell you can specify a data frame (our_gcm = dat)
+C. Finding Runs Based on Years: Here we will use the mind_matches function and specify all of the information we want...
+
+Instead of specifying rcp, gcm and sample cell you can specify a data frame (base_data = dat)
 
 Two examples: 
 one specifying gcm, rcp, and sample cell to find associated data
+
 the other specifying a data frame already in global environment/in correct format 
 
 ```{r finding runs that match climate percentiles}
-#If you used our cleaning process and/or your files are named in this convention: Model_rcp45_#cell ex. MIROC5_rcp45_2
 ui_rcp <- 45 #rcp 45 or 85
 ui_gcm <- 'MIROC5' #MIROC5, CNRM_CM5, CanESM2, HadGEM2ES 
 ui_sample_cell <- 2 #Any sample cell in your environment 
@@ -117,13 +113,10 @@ ui_sample_window <- 20 #Even number: split above and below start date
 
 run_samples <<-
   find_matches(
-    rcp = ui_rcp,
-    #45 or 85
-    gcm = ui_gcm,
-    sample_cell = ui_sample_cell,
-    start_date = ui_start_date,
+    base_data = dat,
+    start_date = ui_start_date, 
     sample_window = ui_sample_window,
-    climate_criteria_table = ui_climate_criteria_table,
+    climate_criteria_table = ui_climate_criteria_table, 
     segment_type = ui_segment_type,
   )
 
@@ -133,18 +126,14 @@ head(run_samples)
 Randomly Select
 Takes the above list of matching options and randomly selects one of each
 ```{r}
-source("/capstone/firefutures/climate-scenarios/randomly_select.R")
 randomly_select(run_samples = run_samples)
 ```
 
 
 Build the scenarios for each grid cell, convert to time series
 ```{r}
-source("/capstone/firefutures/climate-scenarios/get_all_grid_cells_function.R")
-
 ui_grid_cells <- c(1,2) # Select all grid cells
-get_all_grid_cells_function(ui_grid_cells)
+get_all_grid_cells(ui_grid_cells)
 ```
 
-
-
+Get Metadata

@@ -34,5 +34,3 @@ randomly_select <- function(run_samples = run_samples) {
   
 }
 
-# TEST
-randomly_select(run_samples)

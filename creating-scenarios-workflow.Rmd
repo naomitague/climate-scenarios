@@ -21,10 +21,6 @@ MIROC5_45_grid_1 <- read.csv(url("https://raw.githubusercontent.com/fire-futures
 
 MIROC5_45_grid_2 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) #sourcing example cleaned data # vc modified
 
-#setwd("/Users/mallorygiesie/github/climate-scenarios/build_functions") # vc commented out
-
-#setwd(".../climate-scenarios/build_functions") # vc commented out
-
 r_files <- list.files(pattern = "\\.R$")
 
 for (file in r_files) {

@@ -43,9 +43,13 @@ A. Accessing the base unfiltered data frame from 1950-2100:
 
 - If you imported your data frame in the correct format:
 ```{r}
-MIROC5_45_grid_1 <- MIROC5_45_grid_1 %>% mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) # vc modified
+MIROC5_45_grid_1 <- MIROC5_45_grid_1 %>% 
+  mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>%  # vc modified
+  mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) # Erica modified to resolve season column
 
-MIROC5_45_grid_2 <- MIROC5_45_grid_2 %>% mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) # vc added
+MIROC5_45_grid_2 <- MIROC5_45_grid_2 %>% 
+  mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>%  # vc modified
+  mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) # Erica modified to resolve season column
 ```
 
 B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. 
@@ -107,7 +111,8 @@ ui_gcm <- 'MIROC5' #MIROC5, CNRM_CM5, CanESM2, HadGEM2ES
 ui_sample_cell <- 2 #Any sample cell in your environment 
 
 #specify data frame in ui_base_data 
-ui_base_data <- MIROC5_45_grid_2 
+ui_base_data <- MIROC5_45_grid_2
+  
 
 ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10

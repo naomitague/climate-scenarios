@@ -24,27 +24,25 @@
 #}
 
 # FUNCTION -----
-cut_stitch_ts <- function(model_selection = base_data, # loop through dataframes of each grid cell
+cut_stitch_ts <- function(model_selection = ui_base_data, # loop through dataframes of each grid cell #vc modified
                           series_selection = unlist(sample_grid_series),
-                          start_date = start_date, # global variable
+                          start_date = ui_start_date, # global variable # vc modified
                           #start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
                           grid_number,
                           rcp = ui_rcp, #45, #vic added
                           gcm = ui_gcm) #"MIROC5") { #vic added
   # will need to pull out from grid cells to name) 
   {
-  
-  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
-  model_selection <- find_df(gcm = gcm, rcp = rcp, sample_cell = grid_number) # vic modified. may want to relabel sample_cell in the find_df func
-  
-    
+
   # CREATE FOLDER -----
   # Name files with model and grid number
-  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number) # vic modified
+  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number)
   
   # Name files with model and grid number
   #model_name <- deparse(substitute(model_selection)) # This is to pull the name out from the dataframe
   #grid_name_formatted <- paste0(str_to_title(model_name))
+  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
+  model_selection <- get(grid_name_formatted, envir = globalenv()) # vic modified. may want to relabel sample_cell in the find_df func
   
   # For new .csv and time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")

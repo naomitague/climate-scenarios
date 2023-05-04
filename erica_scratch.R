@@ -582,17 +582,17 @@ df <- data.frame(date = dates, col1 = runif(length(dates)), col2 = rnorm(length(
 for (year in start_year:end_year) {
   
   # check if the year is a leap year
-  if (leap_year(year) = TRUE) {
-    
-    # get the date before and after February 29th
-    before_date <- as.Date(paste0(year, "-02-28"))
-    after_date <- as.Date(paste0(year, "-03-01"))
-    
-    # calculate the row to insert
-    insert_row <- data.frame(date = as.Date(paste0(year, "-02-29")))
-    for (col in names(df)[-1]) {
-      insert_row[[col]] <- mean(c(df[df$date == before_date, col], df[df$date == after_date, col]))
-    }
+#   if (leap_year(year) = TRUE) {
+#     
+#     # get the date before and after February 29th
+#     before_date <- as.Date(paste0(year, "-02-28"))
+#     after_date <- as.Date(paste0(year, "-03-01"))
+#     
+#     # calculate the row to insert
+#     insert_row <- data.frame(date = as.Date(paste0(year, "-02-29")))
+#     for (col in names(df)[-1]) {
+#       insert_row[[col]] <- mean(c(df[df$date == before_date, col], df[df$date == after_date, col]))
+#     }
     
     # insert the row into the dataframe
     df <- rbind(df, insert_row)

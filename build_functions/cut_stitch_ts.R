@@ -30,7 +30,7 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
                           #start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
                           grid_number,
                           rcp = ui_rcp, #45, #vic added
-                          gcm = ui_gcm) #"MIROC5") { #vic added
+                          gcm = ui_gcm) #"MIROC5")  #vic added
   # will need to pull out from grid cells to name) 
   {
 
@@ -87,6 +87,7 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
   
   # DEALING WITH UNORDERED LEAP YEAR -----
   # Remove all February 29ths in the dataframe
+  combined_cut_model$time <- as.Date(combined_cut_model$time)
   combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
   
   # Delete TIME column because years are in random order

@@ -22,7 +22,7 @@ randomly_select <- function(run_samples = run_samples) {
       sample_grid_series[[i]] <- run_samples[[i]]
     } 
     else {      # if only one option, select it (added this to fix random error)
-      sample_grid_series[[i]] <- sample(run_samples[[i]], size = 1, replace = TRUE)
+      sample_grid_series[[i]] <- base::sample(run_samples[[i]], size = 1, replace = TRUE)
     }
   }
   

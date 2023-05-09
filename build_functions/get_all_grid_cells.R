@@ -8,12 +8,23 @@
 #' ui_grid_cells <- c(1,2)
 #' get_all_grid_cells(all_grid_cells = ui_grid_cells)
 
-get_all_grid_cells <- function(all_grid_cells) {
+#get_all_grid_cells <- function(all_grid_cells) {
   
-  for(i in seq_along(all_grid_cells)) {
+#  for(i in seq_along(all_grid_cells)) {
     
     # loop's through the cut/stitch / time series function 
-    cut_stitch_ts(grid_number = all_grid_cells[i])
+#    cut_stitch_ts(grid_number = all_grid_cells[i])
+    
+#  }
+  
+#}
+
+get_all_grid_cells <- function(df_names) {
+  
+  for(i in seq_along(df_names)) {
+    
+    # loop's through the cut/stitch / time series function 
+    cut_stitch_ts_vc(df_names = df_names[i])
     
   }
   

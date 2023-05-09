@@ -42,6 +42,7 @@ ui_gcm <- 'MIROC5' # options: 'HadGEM2-ES', 'CNRM-CM5', 'CanESM2', 'MIROC5'
 # run the functions
 find_grid_cell_centroid() # creates the dataframe with the above user inputs that the get_all_grid_cell_data() function will use to grab data for
 centroids_of_interest %>% pmap(get_all_grid_cell_data) # grabs data for all grid cells 
+# ^ needs to adjust units
 ```
 
 OR Input Your Own Data
@@ -145,32 +146,13 @@ randomly_select(run_samples = run_samples) #This will only work if all segments 
 
 Build the scenarios for each grid cell, convert to time series
 ```{r}
-get_all_grid_cells(all_grid_cells = ui_grid_cells)
+find_all_grid_cells()
+get_all_grid_cells(df_names = ui_df_names) # we need to make a root folder for all the grid cells probably in erica's function?
 ```
 
 Get Metadata
 ```{r}
-# not ready yet but will: 
-
-# output, for each segment:
-  # lower percentile for climate variable
-  # upper percentile for climate variable
-  # notes
-  # gcm
-  # rcp
-  # run type (season or year)
-  # dry season definition
-  # wet season defintion
-  # scenario start date
-  # scenario duration
-  # sampling window
-  # sample cell
-  # all cells
-  # available resamples
-  # desired resamples
-  # historical extremes included (Y/N)
-  # calibration included (Y/N)
-  # probability 
+# not ready yet but will output as stated in the technical documentation draft: https://docs.google.com/document/d/1G1UKEErrcdLWn4X61f-iy2ByZO3PCXRP/edit#heading=h.psoig0rfj0i9 AND maybe add the centroids of the cal adapt grid cells?
 
 # and download itself in the root folder of the data download
 ```

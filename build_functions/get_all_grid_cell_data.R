@@ -100,7 +100,9 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
      mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>% 
      mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
    
-   assign(paste0("grid_cell_", grid_cell_id), joined_tbl, envir = .GlobalEnv)
+   # save joined table for each grid cell in the global environment
+   grid_cell_df_naming <- paste0("grid_cell_", grid_cell_id)
+   assign(grid_cell_df_naming, joined_tbl, envir = .GlobalEnv)
   
 }
 

@@ -1,53 +1,30 @@
-#####################
-# COMBINED: Stitch as new df and convert to time series ----------
-#####################
+#' Cut and Stitch Time Series
+#' cut_stitch_ts()
+#' Cut selected time periods, stitch as new data frame and convert to time series
+#'
+#' @param model_selection: loop through each grid cell, this is the base data frame to reference for time selections
+#' @param series_selection: takes the sample_grid_series created from the randomly_select.R function
+#' @param start_date 
+#' @param df_names: from larger loop
+#'
+#' @return folder of time series files and a composite csv file
+#' @export
+#'
 
-# NEED TO DO -----
-# Naming the file by the original selected model name
-# NEED input of grid_number for naming
-# Automate to loop through all selected grids
-
-# INPUTS -----
-# base_data from build_runs.R function
-# sample_grid_series from randomly_select.R function
-# start_date
-# grid_number from larger loop, still need to figure out saving this list to loop through
-
-
-
-#grid_cells <- list(MIROC5_rcp45_2) # Will be named for all grid cells downloaded
-
-#get_all_grid_cells <- function(grid_cells = grid_cells) {
-#  for(i in grid_cells) {
-#    cut_stitch_ts(model_selection = i)
-#  }
-#}
-
-# FUNCTION -----
-cut_stitch_ts <- function(model_selection = ui_base_data, # loop through dataframes of each grid cell #vc modified
+cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
-                          start_date = ui_start_date, # global variable # vc modified
-                          #start_date = as.Date("05/05/2020", format = "%m/%d/%Y"),#vic modified
-                          grid_number,
-                          rcp = ui_rcp, #45, #vic added
-                          gcm = ui_gcm) #"MIROC5")  #vic added
-  # will need to pull out from grid cells to name) 
-  {
-
-  # CREATE FOLDER -----
-  # Name files with model and grid number
-  grid_name_formatted <- paste0(gcm, "_", rcp, "_grid_", grid_number)
+                          start_date = ui_start_date,
+                          df_names)
+{
   
-  # Name files with model and grid number
-  #model_name <- deparse(substitute(model_selection)) # This is to pull the name out from the dataframe
-  #grid_name_formatted <- paste0(str_to_title(model_name))
-  # finds the gcm for each grid cell for the rcp and the gcm of the sample grid cell
-  model_selection <- get(grid_name_formatted, envir = globalenv()) # vic modified. may want to relabel sample_cell in the find_df func
+  grid_name_formatted <- df_names  # Set up as local variable, able to alter naming convention in future
+  
+  # CREATE FOLDER -----
+  model_selection <- get(df_names, envir = globalenv())
   
   # For new .csv and time series files with shared name
   folder_name <- paste0(grid_name_formatted, "_time_series")
   dir.create(folder_name, showWarnings = FALSE)
-  
   
   # CUT AND STITCH -----
   # Empty data frame with column names
@@ -62,7 +39,7 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
     for (i in series_selection) {
       new_cut <- model_selection[which(model_selection$water_year == i), ]
       
-      # Add this cut to the existing dataframe for all cuts
+      # Add this cut to the existing data frame for all cuts
       combined_cut_model <- rbind(combined_cut_model, new_cut)
       
     } # END LOOP
@@ -77,7 +54,7 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
       
-      # Add this cut to the existing dataframe for all cuts
+      # Add this cut to the existing data frame for all cuts
       combined_cut_model <- rbind(combined_cut_model, new_cut)
       
     } # END LOOP
@@ -86,13 +63,13 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
   
   
   # DEALING WITH UNORDERED LEAP YEAR -----
-  # Remove all February 29ths in the dataframe
+  # Remove all February 29ths in the data frame
   combined_cut_model$time <- as.Date(combined_cut_model$time)
   combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
   
   # Delete TIME column because years are in random order
   combined_cut_model <- combined_cut_model %>% select(-time)
-  # Create sequence of every 1460 rows (4 years) to add a leap year row
+  # Create sequence of every 1460 rows (365 days * 4 years) to add a leap year row
   leapyears <- seq(from = 1, to = nrow(combined_cut_model), by = 1460)
   # For every 1460 days rows, add a row
   for(i in leapyears){
@@ -107,24 +84,29 @@ cut_stitch_ts <- function(model_selection = ui_base_data, # loop through datafra
               .after = i)   # Set location of new row
   }
   
+  # Import new data frame into global environment
+  assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
   
-  # Save final dataframe as a .csv
+  # Save final data frame as a .csv
   write.csv(combined_cut_model, 
             file.path(folder_name, paste0(grid_name_formatted, ".csv")), 
             row.names = FALSE)
+
   
   # CONVERT TO TIME SERIES -----
   # LOOP tied together file type and column name
   file_type <- c(".tmax", ".tmin", ".rain", ".relative_humidity_max", ".relative_humidity_min", ".wind")
   col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
-
+  
+  # CHECK that date format is correct YYYY-MM-DD
+  start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
   
   for (i in seq_along(file_type)) {
     # Construct file name with proper extension
     file_name <- file.path(folder_name, paste0(grid_name_formatted, file_type[i]))
     
     # Construct top line of file
-    top_of_file <- sprintf("%d %d %d 1", year(start_date), month(start_date), day(start_date))
+    top_of_file <- sprintf("%04d %02d %02d 1", year(start_date), month(start_date), day(start_date))
     
     # Write top line of file
     write.table(top_of_file, file = file_name, row.names = F, col.names = F, quote = F)

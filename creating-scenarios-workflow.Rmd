@@ -13,7 +13,7 @@ library(purrr)
 library(here)
 library(sf)
 library(leaflet)
-library(caladaptr)
+library(caladaptr)  # remotes::install_github("ucanr-igis/caladaptr")
 library(ggplot2)
 library(ggrepel)
 library(dplyr)
@@ -49,7 +49,7 @@ OR Input Your Own Data
 Just Make Sure You Follow This Structure:
 - naming conventions: for each grid cell, name each as "grid_cell_X"
 - columns:
-  - date (class: date YMD)
+  - date (class: date YYYY-MM-DD)
   - X
   - Y
   - Z
@@ -119,7 +119,7 @@ ui_sample_cell <- grid_cell_23696 # Any sample cell in your environment
 ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
 
-ui_start_date <- '10/07/2000' #MM/DD/YYYY
+ui_start_date <- '10/07/2000' # MM/DD/YYYY
 
 ui_climate_criteria_table <- criteria_list #Defined above 
 
@@ -147,7 +147,7 @@ randomly_select(run_samples = run_samples) #This will only work if all segments 
 Build the scenarios for each grid cell, convert to time series
 ```{r}
 find_all_grid_cells()
-get_all_grid_cells(df_names = ui_df_names) # we need to make a root folder for all the grid cells probably in erica's function?
+get_all_grid_cells(df_names = ui_df_names) # we need to make a root folder for all the grid cells probably in erica's function? for ALL grid cells, this needs to be one step up above in the loop function
 ```
 
 Get Metadata

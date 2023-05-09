@@ -11,41 +11,54 @@ library(tidyverse)
 library(lubridate)
 library(purrr)
 library(here)
-```
+library(sf)
+library(leaflet)
+library(caladaptr)
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
 
-This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
-
-Sourcing all of the functions needed to build scenarios & importing example data. All functions are in the build_runs-functions folder of the climate-scenarios repository
-```{r}
-MIROC5_45_grid_1 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC5_rcp45_1")) # vc modified
-
-MIROC5_45_grid_2 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) #sourcing example cleaned data # vc modified
-
-r_files <- list.files(pattern = "\\.R$")
+r_files <- list.files("build_functions", pattern = "\\.R$", full.names = TRUE)
 
 for (file in r_files) {
   source(file)
 }
 ```
 
-A. Accessing the base unfiltered data frame from 1950-2100:
+This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
 
-- If you used the data cleaning step above & have multiple files in your global environment in this format: model_rcp#_cell# ("MIROC5_rcp45_2") 
+Sourcing all of the functions needed to build scenarios & importing example data. All functions are in the build_runs-functions folder of the climate-scenarios repository
+
+Use Cal Adapt API
 ```{r}
-# dat <- find_df(45, "MIROC5", 2)
-# 
-# head(dat)
+# run the Cal Adapt Map to find your grid cells of interest
+caladapt_map()
+
+# specify your RCP, GCM, and grid cells
+ui_grid_cells <- c(23696, 46896, 46898) # please see map, above, and select grid cells of interest in the format c(23696, 46896)
+ui_rcp <- 85 # options: 45, 85
+ui_gcm <- 'MIROC5' # options: 'HadGEM2-ES', 'CNRM-CM5', 'CanESM2', 'MIROC5'
+
+# run the functions
+find_grid_cell_centroid() # creates the dataframe with the above user inputs that the get_all_grid_cell_data() function will use to grab data for
+centroids_of_interest %>% pmap(get_all_grid_cell_data) # grabs data for all grid cells 
+# ^ needs to adjust units
 ```
 
-- If you imported your data frame in the correct format:
+OR Input Your Own Data
+Just Make Sure You Follow This Structure:
+- naming conventions: for each grid cell, name each as "grid_cell_X"
+- columns:
+  - date (class: date YMD)
+  - X
+  - Y
+  - Z
+  - water_year
+  - season
 ```{r}
-MIROC5_45_grid_1 <- MIROC5_45_grid_1 %>% 
-  mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>%  # vc modified
-  mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) # Erica modified to resolve season column
+grid_cell_1 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC5_rcp45_1"))
 
-MIROC5_45_grid_2 <- MIROC5_45_grid_2 %>% 
-  mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>%  # vc modified
-  mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) # Erica modified to resolve season column
+grid_cell_2 <- read.csv(url("https://raw.githubusercontent.com/fire-futures/climate-scenarios/main/MIROC_rcp45_2")) 
 ```
 
 B. Create your table to designate desired percentile filters for each run. Make sure the length of the list is the desired number of runs you'd like. 
@@ -101,14 +114,7 @@ one specifying gcm, rcp, and sample cell to find associated data
 the other specifying a data frame already in global environment/in correct format 
 
 ```{r finding runs that match climate percentiles}
-# run these even though we've loaded in data
-ui_rcp <- 45 #rcp 45 or 85
-ui_gcm <- 'MIROC5' #MIROC5, CNRM_CM5, CanESM2, HadGEM2ES 
-ui_sample_cell <- 2 #Any sample cell in your environment 
-
-#specify data frame in ui_base_data 
-ui_base_data <- MIROC5_45_grid_2
-  
+ui_sample_cell <- grid_cell_23696 # Any sample cell in your environment 
 
 ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
@@ -121,7 +127,7 @@ ui_sample_window <- 20 #Even number: split above and below start date
 
 run_samples <<-
   find_matches(
-    base_data = ui_base_data, # vc modified
+    base_data = ui_sample_cell,
     start_date = ui_start_date, 
     sample_window = ui_sample_window,
     climate_criteria_table = ui_climate_criteria_table, 
@@ -140,33 +146,14 @@ randomly_select(run_samples = run_samples) #This will only work if all segments 
 
 Build the scenarios for each grid cell, convert to time series
 ```{r}
-ui_grid_cells <- c(1,2) # Select all grid cells
-get_all_grid_cells(all_grid_cells = ui_grid_cells)
+find_all_grid_cells()
+get_all_grid_cells(df_names = ui_df_names) # we need to make a root folder for all the grid cells probably in erica's function?
 ```
 
 Get Metadata
 ```{r}
-# not ready yet but will: 
-
-# output, for each segment:
-  # lower percentile for climate variable
-  # upper percentile for climate variable
-  # notes
-  # gcm
-  # rcp
-  # run type (season or year)
-  # dry season definition
-  # wet season defintion
-  # scenario start date
-  # scenario duration
-  # sampling window
-  # sample cell
-  # all cells
-  # available resamples
-  # desired resamples
-  # historical extremes included (Y/N)
-  # calibration included (Y/N)
-  # probability 
+# not ready yet but will output as stated in the technical documentation draft: https://docs.google.com/document/d/1G1UKEErrcdLWn4X61f-iy2ByZO3PCXRP/edit#heading=h.psoig0rfj0i9 AND maybe add the centroids of the cal adapt grid cells?
+# also add what data each run is built off of (aka output from the randomly select and the number from the find matches output)
 
 # and download itself in the root folder of the data download
 ```

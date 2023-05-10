@@ -59,28 +59,37 @@ find_matches <- function(rcp = NULL,
   
   season_list <- season_order(start_date, length(climate_criteria_table)) #creating a lis to specify which season to find percentiles from 
   
-  for (i in 1:length(climate_criteria_table)) {
-    start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
+  find_years_seasons <- function(start_date, sample_window, base_data, climate_criteria_table, segment_type, season_list) {
+    df_list <- list()
     
-    df <- find_sample_window(start_date, sample_window, base_data) #Calculating the correct sampling window for each run 
-    
-    if(segment_type == "year") {
-      runs <- filter_df(df, climate_criteria_table[[i]])
+    for (i in 1:length(climate_criteria_table)) {
+      start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
+      
+      df <- find_sample_window(start_date, sample_window, base_data) #Calculating the correct sampling window for each run 
+      
+      if(segment_type == "year") {
+        runs <- filter_df(df, climate_criteria_table[[i]])
+      }
+      
+      if(segment_type == "season") {
+        # Call filter_df at index i of the climate variables list
+        runs <- filter_df(df, climate_criteria_table[[i]], season_list[[i]])
+      }
+      
+      # Appends the output to the df_list
+      df_list[[i]] <- runs
+      print(df_list)
+      start_date <- start_date + lubridate::years(1) # Add one year to start_date
     }
     
-    if(segment_type == "season") {
-      # Call filter_df at index i of the climate variables list
-      runs <- filter_df(df, climate_criteria_table[[i]], season_list[[i]])
-    }
+    # Count the number of elements in each list index
+    count_years_seasons <- lapply(df_list, function(x) length(x))
     
-    # Appends the output to the df_list
-    df_list[[i]] <- runs
-    print(df_list)
-    start_date <- start_date + lubridate::years(1) # Add one year to start_date
+    # Create a dataframe with the index and the count of years/seasons
+    result_df <- data.frame(Index = seq_along(count_years_seasons), Count = unlist(count_years_seasons))
+    
+    # Returns a list containing both the df_list and the result_df
+    return(list(df_list = df_list, result_df = result_df))
   }
-  
-  # Returns the list of filtered years for each data frame that can be put into the stitches function
-  return(df_list)
 }
-
 

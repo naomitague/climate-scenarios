@@ -19,6 +19,7 @@ library(ggrepel)
 library(dplyr)
 
 r_files <- list.files("build_functions", pattern = "\\.R$", full.names = TRUE)
+r_files <- list.files(pattern = "\\.R$", full.names = TRUE) #for mal lol 
 
 for (file in r_files) {
   source(file)
@@ -135,6 +136,15 @@ run_samples <<-
   )
 
 head(run_samples)
+
+# Count the number of elements in each list index
+no_matches <- lapply(run_samples, function(x) length(x))
+
+# Create a dataframe with the index and the count of years/seasons
+no_matches <- data.frame(Count = unlist(no_matches))
+
+# Print the results
+print(no_matches)
 ```
 
 Randomly Select

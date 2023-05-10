@@ -16,14 +16,15 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
                           start_date = ui_start_date,
                           df_names)
 {
+  model_selection <- get(df_names, envir = globalenv()) 
   
-  grid_name_formatted <- df_names  # Set up as local variable, able to alter naming convention in future
   
   # CREATE FOLDER -----
-  model_selection <- get(df_names, envir = globalenv())
+  # Create File/Folder Naming Convention
+  grid_name_formatted <- paste0(df_names, "_time_series") 
   
   # For new .csv and time series files with shared name
-  folder_name <- paste0(grid_name_formatted, "_time_series")
+  folder_name <- grid_name_formatted
   dir.create(folder_name, showWarnings = FALSE)
   
   # CUT AND STITCH -----

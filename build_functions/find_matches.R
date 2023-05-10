@@ -75,7 +75,6 @@ find_matches <- function(rcp = NULL,
     
     # Appends the output to the df_list
     df_list[[i]] <- runs
-    print(df_list)
     start_date <- start_date + lubridate::years(1) # Add one year to start_date
   }
   

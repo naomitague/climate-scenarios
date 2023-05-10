@@ -81,6 +81,7 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
               wind = mean(combined_cut_model$wind[i-1], combined_cut_model$wind[i+1]),
               min_temp = mean(combined_cut_model$min_temp[i-1], combined_cut_model$min_temp[i+1]),
               water_year = combined_cut_model$water_year[i-1],
+              season = combined_cut_model$season[i-1],
               .after = i)   # Set location of new row
   }
   

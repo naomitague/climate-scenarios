@@ -116,7 +116,7 @@ the other specifying a data frame already in global environment/in correct forma
 ```{r finding runs that match climate percentiles}
 ui_sample_cell <- grid_cell_23696 # Any sample cell in your environment 
 
-ui_segment_type <- 'season' #year or season
+ui_segment_type <- 'year' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
 
 ui_start_date <- '10/07/2000' # MM/DD/YYYY

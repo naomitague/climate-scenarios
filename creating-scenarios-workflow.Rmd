@@ -19,7 +19,6 @@ library(ggrepel)
 library(dplyr)
 
 r_files <- list.files("build_functions", pattern = "\\.R$", full.names = TRUE)
-r_files <- list.files(pattern = "\\.R$", full.names = TRUE) #for mal lol 
 
 for (file in r_files) {
   source(file)

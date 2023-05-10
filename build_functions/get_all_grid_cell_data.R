@@ -103,7 +103,7 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
    # save joined table for each grid cell in the global environment
    grid_cell_df_naming <- paste0("grid_cell_", grid_cell_id)
    assign(grid_cell_df_naming, joined_tbl, envir = .GlobalEnv)
-  
+  # temp in celcius, rain in meters  
 }
 
 

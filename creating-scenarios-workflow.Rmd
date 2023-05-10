@@ -83,15 +83,15 @@ criteria_list <- list(
     run = 'year 1 season 2',
     notes = 'Average-Above Average Dry',
     variable = c('min_temp'),
-    lower = c(.55),
-    upper = c(.85)
+    lower = c(.0),
+    upper = c(1)
   ),
   data.frame(
     run = 'year 2 season 2',
     notes = 'Average: wind, precip, max_temp',
     variable = c('wind', 'precip', 'max_temp'),
-    lower = c(.25, .25, .15),
-    upper = c(.75, .75, .75)
+    lower = c(0, 0, 0),
+    upper = c(1, 1, 1)
   ),
   data.frame(
     run = 'year 3 season 1',
@@ -138,13 +138,13 @@ run_samples <<-
 head(run_samples)
 
 # Count the number of elements in each list index
-no_matches <- lapply(run_samples, function(x) length(x))
+number_matches <- lapply(run_samples, function(x) length(x))
 
 # Create a dataframe with the index and the count of years/seasons
-no_matches <- data.frame(Count = unlist(no_matches))
+number_matches <- data.frame(Count = unlist(number_matches))
 
 # Print the results
-print(no_matches)
+print(number_matches)
 ```
 
 Randomly Select
@@ -167,4 +167,7 @@ Get Metadata
 
 # and download itself in the root folder of the data download
 ```
+
+
+
 

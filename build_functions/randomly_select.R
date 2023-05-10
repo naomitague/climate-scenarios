@@ -1,16 +1,13 @@
-# Mallory's Output from  buildruns.RMD
-# List of water_years that match each requirement
+#' Function to randomly select out of matching yearly options---------
+#' randomly_select()
+#'
+#' @param run_samples : output from 
+#' Randomly select one of each option
+#' @return
+#' @export Save as new list sample_grid_series
+#'
+#' @examples
 
-###################### Randomly select -----------------
-# Randomly select one of each option
-# Save as new list sample_grid_series
-# -> Will be input to Victoria's function for other grid cell loop
-
-
-# Using Mallory's output
-# run_samples
-
-# Function to randomly select out of matching yearly options---------
 randomly_select <- function(run_samples = run_samples) {
   
   # Create blank list for randomly selected elements

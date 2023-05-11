@@ -1,23 +1,12 @@
 #' Get all grid cells
 #'
-#' This function takes in a list of all grid cells and loops through the "cut_stitch_ts" function for each grid cell.
+#' This function takes in a list of all grid cell data dataframe names and loops through the "cut_stitch_ts" function for each grid cell.
 #'
-#' @param all_grid_cells A vector of grid cell names
-#' @return None
+#' @param df_names A vector of grid cell names, an output from the find_all_grid_cells() function
+#' @return None, calls the cut_stitch_ts() function to loop through with all the df_names
 #' @examples
 #' ui_grid_cells <- c(1,2)
 #' get_all_grid_cells(all_grid_cells = ui_grid_cells)
-
-#get_all_grid_cells <- function(all_grid_cells) {
-  
-#  for(i in seq_along(all_grid_cells)) {
-    
-    # loop's through the cut/stitch / time series function 
-#    cut_stitch_ts(grid_number = all_grid_cells[i])
-    
-#  }
-  
-#}
 
 get_all_grid_cells <- function(df_names) {
   

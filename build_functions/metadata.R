@@ -1,27 +1,7 @@
-# input:
-  # 
+# not ready yet but will output as stated in the technical documentation draft: https://docs.google.com/document/d/1G1UKEErrcdLWn4X61f-iy2ByZO3PCXRP/edit#heading=h.psoig0rfj0i9 AND maybe add the centroids of the cal adapt grid cells?
+# also add what data each run is built off of (aka output from the randomly select and the number from the find matches output)
 
-
-# desired output:
-# for each run:
-  # lower percentile for climate variable
-  # upper percentile for climate variable
-  # notes
-  # gcm
-  # rcp
-  # run type (season or year)
-  # dry season definition
-  # wet season defintion
-  # scenario start date
-  # scenario duration
-  # sampling window
-  # sample cell
-  # all cells
-  # available resamples
-  # desired resamples
-  # historical extremes included (Y/N)
-  # calibration included (Y/N)
-  # probability 
+# and download itself in the root folder of the data download
 
 # download itself in the root folder of the data download
 

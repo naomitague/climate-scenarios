@@ -92,7 +92,7 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
       # wind: in m/s so no conversion needed
       # relative humidity: % between 0 and 100 -> value between 0 and 1
      mutate(min_humidity = min_humidity/100) %>% 
-     mutate(max_humidity = min_humidity/100) %>% 
+     mutate(max_humidity = max_humidity/100) %>% 
       #.temperature: degrees K -> degrees C
      mutate(min_temp = min_temp - 273.15) %>% 
      mutate(max_temp = max_temp - 273.15) %>% 

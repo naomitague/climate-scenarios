@@ -1,18 +1,5 @@
 #View(ca_catalog_rs())
 
-####### FOR THE RMD
-# user selects grid cells and rcp and model
-library(sf)
-library(leaflet)
-library(caladaptr)
-library(ggplot2)
-library(ggrepel)
-library(dplyr)
-ui_grid_cells <- c(23696, 46896, 46898)
-ui_rcp <- 85
-ui_gcm <- 'MIROC5'
-#########
-
 # get all the data from this GCM and RCP, including historical
 get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
   
@@ -101,7 +88,16 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
      mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>% 
      # designate season given a month
      mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) %>% 
-     
+     # changing units to RHESSys units
+      # wind: in m/s so no conversion needed
+      # relative humidity: % between 0 and 100 -> value between 0 and 1
+     mutate(min_humidity = min_humidity/100) %>% 
+     mutate(max_humidity = min_humidity/100) %>% 
+      #.temperature: degrees K -> degrees C
+     mutate(min_temp = min_temp - 273.15) %>% 
+     mutate(max_temp = max_temp - 273.15) %>% 
+      # precipitation: kg/m^2/s -> m. Equation used: multiply value by 86,400 (24 hours/day x 60 minutes/hour x 60 seconds/minute) to get daily values in mm. then divide by 1000 to get daily values in meters. Source: https://cal-adapt.org/help/glossary/
+     mutate(precip = precip * 86400/1000)
    
    # save joined table for each grid cell in the global environment
    grid_cell_df_naming <- paste0("grid_cell_", grid_cell_id)

@@ -6,11 +6,29 @@ caladapt_map <- function() {
 
   # map criteria
   map <- leaflet() %>%
-    addTiles() %>%
+    addProviderTiles("Esri.WorldImagery", group = "Satellite", layerId = "Satelite") %>%
+    addProviderTiles("CartoDB.Positron", group = "Basemap", layerId = "Default") %>%
     addPolygons(data = caladaptpolygons,
-                label = ~id,  # Display the id column as label
-                labelOptions = labelOptions())
+                fillColor = "blue",
+                fillOpacity = 0.2,
+                color = "white",
+                weight = 1,
+                popup = paste("ID: ", caladaptpolygons$id),
+                group = "Grid Cell IDs") %>%
+    addLayersControl(position = "topleft",
+                     baseGroups = c("Default", "Satellite"),
+                     overlayGroups = "Grid Cell IDs",
+                     options = layersControlOptions(collapsed = FALSE)) %>% 
+    addControl(
+      html = "Click a Grid Cell to grab its ID",
+      position = "bottomright"
+    ) %>%
+    setView(lng = -119.6823, lat = 34.4208, zoom = 10)
 
   # display the map
-  map
+  return(map)
 }
+
+#caladapt_map()
+
+  

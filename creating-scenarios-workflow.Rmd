@@ -161,7 +161,7 @@ get_all_grid_cells(df_names = ui_df_names)
 
 Get Metadata
 ```{r}
-get_metadata() # need to get rid of the id column. that it creates
+get_metadata() 
 ```
 
 

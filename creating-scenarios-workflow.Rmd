@@ -161,7 +161,6 @@ get_all_grid_cells(df_names = ui_df_names)
 
 Get Metadata
 ```{r}
-dir.create("all_grid_cell_output", showWarnings = FALSE) # needs to be added to erica's function?
 get_metadata() # need to get rid of the id column. that it creates
 ```
 

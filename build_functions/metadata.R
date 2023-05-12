@@ -21,7 +21,7 @@ get_metadata <- function() {
     mutate(gcm_rcp = ifelse(
       ui_caladapt_ind == 'Y', paste0(ui_gcm, "_", ui_rcp), 'NA: user input data')) %>% 
     mutate(sample_cell = ui_sample_cell) %>% 
-    mutate(all_cells = paste(ui_grid_cells, collapse = ",")) %>% # need to add
+    mutate(all_cells = paste(ui_df_names, collapse = ", ")) %>%
     mutate(dry_season_def = 'not functional') %>% # need to add
     mutate(wet_season_def = 'not functional') %>% # need to add when we know more about this
     mutate(scenario_start_date = ui_start_date) %>% 
@@ -36,6 +36,6 @@ get_metadata <- function() {
     mutate(calibration_included = 'N') # not yet functional
 
   # also save the file in the root folder
-  write.csv(metadata, "all_grid_cell_output/metadata.csv", col.names = F)
+  write.csv(metadata, "all_grid_cell_output/metadata.csv", row.names = F)
   
 }

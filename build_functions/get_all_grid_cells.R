@@ -10,6 +10,10 @@
 
 get_all_grid_cells <- function(df_names) {
   
+  # creating the root output folder that the cut_stitch_ts() function and get_metadata() function will add things into
+  root_output_folder_name = "all_grid_cell_output"
+  dir.create(root_output_folder_name, showWarnings = FALSE)
+  
   for(i in seq_along(df_names)) {
     
     # loop's through the cut/stitch / time series function 

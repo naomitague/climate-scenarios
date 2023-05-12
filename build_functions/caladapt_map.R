@@ -21,7 +21,7 @@ caladapt_map <- function() {
                      options = layersControlOptions(collapsed = FALSE)) %>% 
     addControl(
       html = "Click a Grid Cell to grab its ID",
-      position = "bottomright"
+      position = "topright"
     ) %>%
     setView(lng = -119.6823, lat = 34.4208, zoom = 10)
 

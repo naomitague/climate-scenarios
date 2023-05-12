@@ -1,8 +1,3 @@
-######### to add to workflow doc
-# delete comment about needing to update units 
-# add to user input data:
-ui_caladapt_ind = 'Y' # mark as Y if using cal adapt data through this api. if uploading your own data, dont run this line
-# delete "run" in criteria_list?
 # ui_sample_cell will equal the NAME of the sample cell data frame (since this will be how shiny works) and then the base_data will equal the dataframe matching that name
 
 
@@ -21,27 +16,26 @@ get_metadata <- function() {
   # make a dataframe with the number of rows that we need which should match the number of runs built in the climate_vars_list
   climate_vars_df <- do.call(rbind, criteria_list) 
 
-  # add in all the columns we need
-  metadata <- climate_vars_df %>% 
+  # add in all the columns we need and save metadata to the global environment
+  metadata <<- climate_vars_df %>% 
     mutate(gcm_rcp = ifelse(
-      ui_caladapt_ind == 'Y', paste0(ui_gcm, "_", ui_rcp), 'user input data')) %>% 
-    mutate(sample_cell = names(ui_sample_cell)) %>% 
+      ui_caladapt_ind == 'Y', paste0(ui_gcm, "_", ui_rcp), 'NA: user input data')) %>% 
+    mutate(sample_cell = ui_sample_cell) %>% 
     mutate(all_cells = paste(ui_grid_cells, collapse = ",")) %>% # need to add
-    #mutate(dry_season_def = '???') %>% # need to add
-    #mutate(wet_season_def = '???') %>% # need to add
+    mutate(dry_season_def = 'not functional') %>% # need to add
+    mutate(wet_season_def = 'not functional') %>% # need to add when we know more about this
     mutate(scenario_start_date = ui_start_date) %>% 
     mutate(segment_type = ui_segment_type) %>% 
-    #mutate(scenario_duration = 5) %>% # need to add
-    mutate(sample_window = ui_sample_window) %>% # need to add
+    mutate(scenario_duration = ifelse(
+      ui_segment_type == 'year', # if the user is building years
+      length(criteria_list), # there are as many years as there are climate criteria
+      round(length(criteria_list)/4,2))) %>% # otherwise the user is building by season so we divide by 4
+    mutate(sample_window = ui_sample_window) %>%
     merge(number_matches) %>% 
-   # mutate(avail_samples = 10) %>% # need to add
-    mutate(historical_extremes_incl = 'N') %>% # need to add
-    mutate(calibration_included = 'N') # need to add
-  
-  View(metadata)
+    mutate(historical_extremes_incl = 'N') %>% # not yet functional
+    mutate(calibration_included = 'N') # not yet functional
 
-  # download in a root folder? or all folders?
+  # also save the file in the root folder
+  write.csv(metadata, "all_grid_cell_output/metadata.csv", col.names = F)
   
 }
-
-get_metadata()

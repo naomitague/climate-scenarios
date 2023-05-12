@@ -22,8 +22,8 @@ get_metadata <- function() {
       ui_caladapt_ind == 'Y', paste0(ui_gcm, "_", ui_rcp), 'NA: user input data')) %>% 
     mutate(sample_cell = ui_sample_cell) %>% 
     mutate(all_cells = paste(ui_df_names, collapse = ", ")) %>%
-    mutate(dry_season_def = 'not functional') %>% # need to add
-    mutate(wet_season_def = 'not functional') %>% # need to add when we know more about this
+    #mutate(dry_season_def = 'not functional') %>% # not yet functional
+    #mutate(wet_season_def = 'not functional') %>% # not yet functional
     mutate(scenario_start_date = ui_start_date) %>% 
     mutate(segment_type = ui_segment_type) %>% 
     mutate(scenario_duration = ifelse(
@@ -31,9 +31,9 @@ get_metadata <- function() {
       length(criteria_list), # there are as many years as there are climate criteria
       round(length(criteria_list)/4,2))) %>% # otherwise the user is building by season so we divide by 4
     mutate(sample_window = ui_sample_window) %>%
-    merge(number_matches) %>% 
-    mutate(historical_extremes_incl = 'N') %>% # not yet functional
-    mutate(calibration_included = 'N') # not yet functional
+    merge(number_matches)
+   # mutate(historical_extremes_incl = 'N') %>% # not yet functional
+    #mutate(calibration_included = 'N') # not yet functional
 
   # also save the file in the root folder
   write.csv(metadata, "all_grid_cell_output/metadata.csv", row.names = F)

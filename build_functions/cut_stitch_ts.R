@@ -14,7 +14,8 @@
 cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
                           start_date = ui_start_date,
-                          df_names)
+                          df_names,
+                          root_folder)
 {
   model_selection <- get(df_names, envir = globalenv()) 
   
@@ -24,8 +25,8 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   grid_name_formatted <- paste0(df_names, "_time_series") 
   
   # For new .csv and time series files with shared name
-  folder_name <- grid_name_formatted
-  dir.create(folder_name, showWarnings = FALSE)
+  folder_path <- file.path(root_folder, grid_name_formatted)
+  dir.create(folder_path, showWarnings = FALSE)
   
   # CUT AND STITCH -----
   # Empty data frame with column names
@@ -86,12 +87,20 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
               .after = i)   # Set location of new row
   }
   
+  # CHECK that date format is correct YYYY-MM-DD
+  start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
+  
+  # Add new date column
+  num_rows <- nrow(combined_cut_model)
+  dates <- seq(from = start_date, length.out = num_rows, by = "day")
+  combined_cut_model$sequence_date <- dates
+  
   # Import new data frame into global environment
   assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
   
   # Save final data frame as a .csv
   write.csv(combined_cut_model, 
-            file.path(folder_name, paste0(grid_name_formatted, ".csv")), 
+            file.path(folder_path, paste0(grid_name_formatted, ".csv")), 
             row.names = FALSE)
 
   
@@ -100,12 +109,9 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   file_type <- c(".tmax", ".tmin", ".rain", ".relative_humidity_max", ".relative_humidity_min", ".wind")
   col_names <- c("max_temp", "min_temp", "precip", "max_humidity", "min_humidity", "wind")
   
-  # CHECK that date format is correct YYYY-MM-DD
-  start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
-  
   for (i in seq_along(file_type)) {
     # Construct file name with proper extension
-    file_name <- file.path(folder_name, paste0(grid_name_formatted, file_type[i]))
+    file_name <- file.path(folder_path, paste0(grid_name_formatted, file_type[i]))
     
     # Construct top line of file
     top_of_file <- sprintf("%04d %02d %02d 1", year(start_date), month(start_date), day(start_date))

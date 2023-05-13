@@ -17,7 +17,7 @@ get_all_grid_cells <- function(df_names) {
   for(i in seq_along(df_names)) {
     
     # loop's through the cut/stitch / time series function 
-    cut_stitch_ts(df_names = df_names[i])
+    cut_stitch_ts(df_names = df_names[i], root_folder = root_output_folder_name)
     
   }
   

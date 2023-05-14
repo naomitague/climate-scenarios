@@ -17,11 +17,6 @@ season_order <- function(start_date, n) {
   season <- ifelse(month(start_date) %in% c(11, 12, 1, 2, 3, 4), "wet", "dry")
   season_list <- vector("list", n)
   
-  # Update season based on start date
-  if (season == "dry") {
-    season <- "wet"
-  }
-  
   for (i in 1:n) {
     season_list[[i]] <- season
     season <- ifelse(season == "wet", "dry", "wet")

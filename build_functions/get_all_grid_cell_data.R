@@ -1,7 +1,11 @@
 #View(ca_catalog_rs())
 
+#set defaults to those specified in the workflow
+default_ui_gcm <- ui_gcm
+default_ui_rcp <- ui_rcp
+
 # get all the data from this GCM and RCP, including historical
-get_all_grid_cell_data <- function(grid_cell_id, lat, lon) {
+get_all_grid_cell_data <- function(grid_cell_id, lat, lon, ui_gcm = default_ui_gcm, ui_rcp = default_ui_rcp) {
   
   # Wind
   wind_slug <- paste0('wspeed_day_', ui_gcm , '_', 'rcp', ui_rcp)

@@ -1,6 +1,8 @@
 # map grid cell to a centroid
 
-find_grid_cell_centroid <- function() {
+default_ui_grid_cells <- ui_grid_cells
+
+find_grid_cell_centroid <- function(ui_grid_cells = default_ui_grid_cells) {
   
   caladaptpolygons <- ca_locagrid_geom()
 

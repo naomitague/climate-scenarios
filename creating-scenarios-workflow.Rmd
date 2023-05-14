@@ -4,6 +4,9 @@ author: "Fire Futures"
 date: "2023-04-25"
 output: html_document
 ---
+
+This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
+
 ```{r}
 knitr::opts_chunk$set(echo = TRUE)
 library(strex)
@@ -17,17 +20,23 @@ library(caladaptr)  # remotes::install_github("ucanr-igis/caladaptr")
 library(ggplot2)
 library(ggrepel)
 library(dplyr)
+```
 
+```{r}
+# specify your RCP, GCM, and grid cells
+ui_grid_cells <- c(23696, 46896, 46898) # please see map, above, and select grid cells of interest in the format c(23696, 46896)
+ui_rcp <- 85 # options: 45, 85
+ui_gcm <- 'CanESM2' # options: 'HadGEM2-ES', 'CNRM-CM5', 'CanESM2', 'MIROC5'
+```
+
+Sourcing all of the functions needed to build scenarios & importing example data. All functions are in the build_runs-functions folder of the climate-scenarios repository
+```{r}
 r_files <- list.files("build_functions", pattern = "\\.R$", full.names = TRUE)
 
 for (file in r_files) {
   source(file)
 }
 ```
-
-This Rmarkdown provides step by step instructions for creating climate scenarios and exporting them into RHESSys formatted time series 
-
-Sourcing all of the functions needed to build scenarios & importing example data. All functions are in the build_runs-functions folder of the climate-scenarios repository
 
 Use Cal Adapt API
 ```{r}
@@ -37,13 +46,9 @@ caladapt_map()
 # specify if you will use the cal adapt data api
 ui_caladapt_ind = 'Y' # mark as Y if using cal adapt data through this api. if uploading your own data, no need to run this line.
 
-# specify your RCP, GCM, and grid cells
-ui_grid_cells <- c(23696, 46896, 46898) # please see map, above, and select grid cells of interest in the format c(23696, 46896)
-ui_rcp <- 85 # options: 45, 85
-ui_gcm <- 'MIROC5' # options: 'HadGEM2-ES', 'CNRM-CM5', 'CanESM2', 'MIROC5'
-
 # run the functions
 find_grid_cell_centroid() # creates the dataframe with the above user inputs that the get_all_grid_cell_data() function will use to grab data for
+
 centroids_of_interest %>% pmap(get_all_grid_cell_data) # grabs data for all grid cells 
 ```
 
@@ -116,10 +121,10 @@ the other specifying a data frame already in global environment/in correct forma
 ```{r finding runs that match climate percentiles}
 ui_sample_cell <- 'grid_cell_23696' # pick the grid cell that you will base all your filtering off of. use '' for metadata purposes
 
-ui_segment_type <- 'year' #year or season
+ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
 
-ui_start_date <- '10/07/2000' # MM/DD/YYYY
+ui_start_date <- '11/01/2000' # MM/DD/YYYY
 
 ui_climate_criteria_table <- criteria_list #Defined above 
 

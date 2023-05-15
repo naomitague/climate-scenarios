@@ -34,12 +34,21 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   combined_cut_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
   colnames(combined_cut_model) <- col_names
   
+  # CHECK that date format is correct YYYY-MM-DD
+  start_date <- as.Date(start_date, format = "%Y/%m/%d", origin = "1970-01-01")
+  combined_cut_model$time <- as.Date(combined_cut_model$time , format = "%Y/%m/%d", origin = "1970-01-01")
+  
   # Check if series_selection is by year or season_year
   if(all(is.numeric(series_selection))) {
     
     # YEARS: Loop through, select range by time and cut and save
     for (i in series_selection) {
       new_cut <- model_selection[which(model_selection$water_year == i), ]
+      
+      # Filter the first cut by the start date
+      if (i == series_selection[1]) { 
+        new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
+      }
       
       # Add this cut to the existing data frame for all cuts
       combined_cut_model <- rbind(combined_cut_model, new_cut)
@@ -55,6 +64,11 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
+      
+      # Filter the first cut by the start date
+      if (i == series_selection[1]) {
+        new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
+      }
       
       # Add this cut to the existing data frame for all cuts
       combined_cut_model <- rbind(combined_cut_model, new_cut)
@@ -88,9 +102,6 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
               season = combined_cut_model$season[i-1],
               .after = i)   # Set location of new row
   }
-  
-  # CHECK that date format is correct YYYY-MM-DD
-  start_date <- as.Date(start_date, format = "%Y/%m/%d", origin = "1970-01-01")
 
   
   # Add new date column

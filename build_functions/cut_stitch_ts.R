@@ -59,7 +59,10 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
       if (i == series_selection[1]) {  # Filter the first sequence by the start date
-        new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
+        formatted_dates <- format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d")
+        start_date_month_day <- format(as.Date(start_date, format="%Y/%m/%d"), "%m-%d")
+        start_index <- which(formatted_dates == start_date_month_day)[1]
+        new_cut <- new_cut[start_index:nrow(new_cut), ]
       }
       combined_cut_model <- rbind(combined_cut_model, new_cut) # Add this cut to the existing data frame for all cuts
     } # END SEASONS LOOP

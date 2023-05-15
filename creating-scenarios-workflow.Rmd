@@ -124,7 +124,7 @@ ui_sample_cell <- 'grid_cell_23696' # pick the grid cell that you will base all 
 ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
 
-ui_start_date <- '11/01/2000' # MM/DD/YYYY
+ui_start_date <- '2000/07/01' # YYYY/MM/DD
 
 ui_climate_criteria_table <- criteria_list #Defined above 
 

@@ -1,17 +1,17 @@
 library(tidyverse)
 
-grid_cell_23696_time_series <- read_csv("grid_cell_23696_time_series/grid_cell_23696_time_series.csv")
+#grid_cell_23696_time_series <- read_csv("grid_cell_23696_time_series/grid_cell_23696_time_series.csv")
 
 # Generate a sequence of dates with a length equal to the number of rows in df
-date_seq <- seq.Date(from = as.Date(ui_start_date, format = "%m/%d/%Y", origin = "1970-01-01"), by = "day", length.out = nrow(grid_cell_23696_time_series))
+#date_seq <- seq.Date(from = as.Date(ui_start_date, format = "%m/%d/%Y", origin = "1970-01-01"), by = "day", length.out = nrow(grid_cell_23696_time_series))
 
 # Assign the sequence of dates to the 'date' column of the data frame
-grid_cell_23696_time_series$date <- date_seq
+#grid_cell_23696_time_series$date <- date_seq
 
 # Group the data by the year_season order. MONTHLY.
 grid_cell_23696_time_series %>%
-  mutate(month = lubridate::month(date)) %>%
-  mutate(year = lubridate::year(date)) %>%
+  mutate(month = lubridate::month(sequence_date)) %>%
+  mutate(year = lubridate::year(sequence_date)) %>%
   filter(year < 2013 & year > 2000) %>%
   group_by(year, month) %>%
   summarise(water_year = first(water_year),
@@ -24,11 +24,10 @@ grid_cell_23696_time_series %>%
   labs(x = "Date", y = "", color = "", title = "CanESM RCP 8.5 Year Segment Scenario") +
   facet_wrap(~year, scales = "free_x")
 
-
 # Group the data by the year_season order DAILY
 grid_cell_23696_time_series %>%
-  mutate(month = lubridate::month(date)) %>%
-  mutate(year = lubridate::year(date)) %>%
+  mutate(month = lubridate::month(sequence_date)) %>%
+  mutate(year = lubridate::year(sequence_date)) %>%
   filter(year < 2013 & year > 2000) %>%
   gather(key = "variable", 
          value = "value", 

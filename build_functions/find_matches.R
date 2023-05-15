@@ -33,34 +33,12 @@ find_matches <- function(rcp = NULL,
                        climate_criteria_table,
                        sample_window) {
   
-  # #SAVING ALL CRITERIA FOR TIME SERIES TO ADD TO META DATE FUNCTION 
-  # ui_rcp <<- rcp
-  # ui_gcm <<- gcm
-  # ui_sample_cell <<- sample_cell
-  # ui_base_data <<- base_data
-  # ui_segment_type <<- segment_type
-  # ui_start_date <<- start_date
-  # ui_climate_criteria_table <<- climate_criteria_table
-  # ui_sample_window <<- sample_window
-  
-  # Moved by Erica because need this column in global
-  # if (!is.null(base_data)) { 
-  #   # If base_data argument is provided, use it as the input data frame
-  #   base_data <- base_data %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
-  #     
-  # } else if (!is.null(rcp) & !is.null(gcm) & !is.null(sample_cell)) {
-  #   # If rcp, gcm, and sample_cell arguments are provided, find the data frame using find_df() function
-  #   base_data <- find_df(rcp, gcm, sample_cell) %>% mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry"))
-  # } else {
-  #   stop("Either provide rcp, gcm, and sample_cell arguments or provide a dataframe using base_data argument.")
-  # }
-  
   df_list <- list() #initalizing empty list
   
   season_list <- season_order(start_date, length(climate_criteria_table)) #creating a lis to specify which season to find percentiles from 
   
   for (i in 1:length(climate_criteria_table)) {
-    start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
+    start_date <- as.Date(start_date, format = "%Y/%m/%d", origin = "1970-01-01")
     
     df <- find_sample_window(start_date, sample_window, base_data) #Calculating the correct sampling window for each run 
     

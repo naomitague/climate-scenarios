@@ -70,7 +70,9 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
   
   # Delete TIME column because years are in random order
+  combined_cut_model <- combined_cut_model %>% mutate(old_date = as.character(time))
   combined_cut_model <- combined_cut_model %>% select(-time)
+  
   # Create sequence of every 1460 rows (365 days * 4 years) to add a leap year row
   leapyears <- seq(from = 1, to = nrow(combined_cut_model), by = 1460)
   # For every 1460 days rows, add a row
@@ -88,7 +90,8 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   }
   
   # CHECK that date format is correct YYYY-MM-DD
-  start_date <- as.Date(start_date, format = "%m/%d/%Y", origin = "1970-01-01")
+  start_date <- as.Date(start_date, format = "%Y/%m/%d", origin = "1970-01-01")
+
   
   # Add new date column
   num_rows <- nrow(combined_cut_model)

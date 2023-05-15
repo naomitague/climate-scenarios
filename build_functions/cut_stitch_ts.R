@@ -12,7 +12,7 @@
 #'
 
 # Testing the filter used - located in the for loops for both year and season
-grid_cell_46896[format(as.Date(grid_cell_46896$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(ui_start_date, format="%Y/%m/%d"),"%m-%d"), ]
+# grid_cell_46896[format(as.Date(grid_cell_46896$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(ui_start_date, format="%Y/%m/%d"),"%m-%d"), ]
 
 cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),

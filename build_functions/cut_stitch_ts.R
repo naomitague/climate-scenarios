@@ -24,39 +24,30 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   
   
   # CREATE FOLDER -----
-  # Create File/Folder Naming Convention
-  grid_name_formatted <- paste0(df_names, "_time_series") 
-  
-  # For new .csv and time series files with shared name
-  folder_path <- file.path(root_folder, grid_name_formatted)
+  grid_name_formatted <- paste0(df_names, "_time_series")      # Create File/Folder Naming Convention
+  folder_path <- file.path(root_folder, grid_name_formatted)  # For new .csv and time series files with shared name
   dir.create(folder_path, showWarnings = FALSE)
   
-  # CUT AND STITCH -----
-  # Empty data frame with column names
-  col_names <- colnames(model_selection)
+  # CREATE BLANK DATA FRAME ----
+  col_names <- colnames(model_selection)       
   combined_cut_model <- data.frame(matrix(ncol = length(col_names), nrow = 0))
-  colnames(combined_cut_model) <- col_names
+  colnames(combined_cut_model) <- col_names   # Empty data frame with column names
   
-  # CHECK that date format is correct YYYY-MM-DD
+  # CHECK DATE YYYY-MM-DD ----
   start_date <- as.Date(start_date, format = "%Y/%m/%d", origin = "1970-01-01")
   combined_cut_model$time <- as.Date(combined_cut_model$time , format = "%Y/%m/%d", origin = "1970-01-01")
   
-  # Check if series_selection is by year or season_year
+  # CUT YEAR OR SEASON -----
   if(all(is.numeric(series_selection))) {
     
     # YEARS: Loop through, select range by time and cut and save
     for (i in series_selection) {
-      new_cut <- model_selection[which(model_selection$water_year == i), ]
-      
-      # Filter the first sequence by the start date
-      if (i == series_selection[1]) { 
+      new_cut <- model_selection[which(model_selection$water_year == i), ]  # Search matching time
+      if (i == series_selection[1]) { # Filter the first sequence by the start date
         new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
       }
-      
-      # Add this cut to the existing data frame for all cuts
-      combined_cut_model <- rbind(combined_cut_model, new_cut)
-      
-    } # END LOOP
+      combined_cut_model <- rbind(combined_cut_model, new_cut) # Add this cut to the existing data frame for all cuts
+    } # END YEARS LOOP
     
   } else {
     
@@ -67,33 +58,23 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
-      
-      # Filter the first sequence by the start date
-      if (i == series_selection[1]) {
+      if (i == series_selection[1]) {  # Filter the first sequence by the start date
         new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
       }
-      
-      # Add this cut to the existing data frame for all cuts
-      combined_cut_model <- rbind(combined_cut_model, new_cut)
-      
-    } # END LOOP
+      combined_cut_model <- rbind(combined_cut_model, new_cut) # Add this cut to the existing data frame for all cuts
+    } # END SEASONS LOOP
     
   } # END IF
   
   
   # DEALING WITH UNORDERED LEAP YEAR -----
-  # Remove all February 29ths in the data frame
-  combined_cut_model$time <- as.Date(combined_cut_model$time)
-  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ]
+  combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ] # Remove all February 29ths in the data frame
+
+  combined_cut_model <- combined_cut_model %>% mutate(old_date = as.character(time)) # Add character of original date
+  combined_cut_model <- combined_cut_model %>% select(-time) # Delete TIME column for next step to work
   
-  # Delete TIME column because years are in random order
-  combined_cut_model <- combined_cut_model %>% mutate(old_date = as.character(time))
-  combined_cut_model <- combined_cut_model %>% select(-time)
-  
-  # Create sequence of every 1460 rows (365 days * 4 years) to add a leap year row
-  leapyears <- seq(from = 1, to = nrow(combined_cut_model), by = 1460)
-  # For every 1460 days rows, add a row
-  for(i in leapyears){
+  leapyears <- seq(from = 1, to = nrow(combined_cut_model), by = 1460)   # sequence of 1460 rows (365 days * 4 years) to add a leap year row
+  for(i in leapyears){    # For every 1460 days rows, add a row
     combined_cut_model <- combined_cut_model %>% 
       add_row(max_temp = mean(combined_cut_model$max_temp[i - 1], combined_cut_model$max_temp[i + 1]),
               precip = 0,
@@ -105,18 +86,16 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
               season = combined_cut_model$season[i-1],
               .after = i)   # Set location of new row
   }
-
   
-  # Add new date column
+  # NEW DATE COLUMN -----
   num_rows <- nrow(combined_cut_model)
   dates <- seq(from = start_date, length.out = num_rows, by = "day")
   combined_cut_model$sequence_date <- dates
   
-  # Import new data frame into global environment
+  # SAVING -----
   assign(grid_name_formatted, combined_cut_model, envir = .GlobalEnv)
   
-  # Save final data frame as a .csv
-  write.csv(combined_cut_model, 
+  write.csv(combined_cut_model,      # Save final data frame as a .csv
             file.path(folder_path, paste0(grid_name_formatted, ".csv")), 
             row.names = FALSE)
 

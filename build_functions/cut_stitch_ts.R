@@ -11,6 +11,9 @@
 #' @export
 #'
 
+# Testing the filter used - located in the for loops for both year and season
+grid_cell_46896[format(as.Date(grid_cell_46896$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(ui_start_date, format="%Y/%m/%d"),"%m-%d"), ]
+
 cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through dataframes of each grid cell
                           series_selection = unlist(sample_grid_series),
                           start_date = ui_start_date,
@@ -45,7 +48,7 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
     for (i in series_selection) {
       new_cut <- model_selection[which(model_selection$water_year == i), ]
       
-      # Filter the first cut by the start date
+      # Filter the first sequence by the start date
       if (i == series_selection[1]) { 
         new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
       }
@@ -65,7 +68,7 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year), ]
       
-      # Filter the first cut by the start date
+      # Filter the first sequence by the start date
       if (i == series_selection[1]) {
         new_cut <- new_cut[format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d") >= format(as.Date(start_date, format="%Y/%m/%d"),"%m-%d"), ]
       }
@@ -137,3 +140,4 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
     write.table(combined_cut_model[[col_names[i]]], file = file_name, row.names = F, col.names = F, quote = F, append = T)
   }
 }
+

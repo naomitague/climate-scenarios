@@ -119,7 +119,11 @@ one specifying gcm, rcp, and sample cell to find associated data
 the other specifying a data frame already in global environment/in correct format 
 
 ```{r finding runs that match climate percentiles}
-ui_sample_cell <- 'grid_cell_23696' # pick the grid cell that you will base all your filtering off of. use '' for metadata purposes
+# ui_sample_cell <- 'grid_cell_23696' # pick the grid cell that you will base all your filtering off of. use '' for metadata purposes
+
+
+ui_sample_cell <- grid_cell_23696 # pick the grid cell that you will base all your filtering off of. use '' for metadata purposes
+
 
 ui_segment_type <- 'season' #year or season
 #season is defined in find_matches.R currently: wet is months 11-4 and dry 5-10
@@ -132,7 +136,8 @@ ui_sample_window <- 20 #Even number: split above and below start date
 
 run_samples <<-
   find_matches(
-    base_data = get(ui_sample_cell, envir = globalenv()),
+    # base_data = get(ui_sample_cell, envir = globalenv()),
+    base_data = ui_sample_cell,
     start_date = ui_start_date, 
     sample_window = ui_sample_window,
     climate_criteria_table = ui_climate_criteria_table, 

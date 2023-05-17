@@ -86,7 +86,7 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon, ui_gcm = default_ui_g
      inner_join(mintemp_tbl, by = "dt") %>%
      inner_join(maxtemp_tbl, by = "dt") %>%
      inner_join(pr_tbl, by = "dt") %>% 
-     mutate(dt = as_date(dt)) %>% 
+     mutate(dt = as.Date(dt, origin = "1970-01-01")) %>% 
      rename(time = dt) %>% 
      # add water year column
      mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>% 

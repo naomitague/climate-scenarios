@@ -63,10 +63,6 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year),]
       
-      # print(paste("******", head(new_cut)))
-      # print(paste("!!!!", tail(new_cut)))  
-      print(class(new_cut))
-      
       # Filter the first sequence by the start date
       if (i == series_selection[1]) {  
         formatted_dates <- format(as.Date(new_cut$time, format="%Y-%m-%d"), "%m-%d")

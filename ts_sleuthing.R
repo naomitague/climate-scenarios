@@ -9,7 +9,7 @@ library(tidyverse)
 #grid_cell_23696_time_series$date <- date_seq
 
 # Group the data by the year_season order. MONTHLY.
-grid_cell_23696_time_series %>%
+grid_cell_46896_time_series %>%
   mutate(month = lubridate::month(sequence_date)) %>%
   mutate(year = lubridate::year(sequence_date)) %>%
   filter(year < 2013 & year > 2000) %>%

@@ -1,5 +1,3 @@
-#View(ca_catalog_rs())
-
 #set defaults to those specified in the workflow
 default_ui_gcm <- ui_gcm
 default_ui_rcp <- ui_rcp
@@ -86,12 +84,12 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon, ui_gcm = default_ui_g
      inner_join(mintemp_tbl, by = "dt") %>%
      inner_join(maxtemp_tbl, by = "dt") %>%
      inner_join(pr_tbl, by = "dt") %>% 
-     mutate(dt = as.Date(dt, origin = "1970-01-01")) %>% 
+     mutate(dt = as_date(dt)) %>% 
      rename(time = dt) %>% 
      # add water year column
      mutate(water_year = ifelse(month(time) > 9, year(time) + 1, year(time))) %>% 
      # designate season given a month
-     mutate(season = ifelse(lubridate::month(time) %in%  c(11, 12, 1, 2, 3, 4), "wet", "dry")) %>% 
+     mutate(season = ifelse(lubridate::month(time) %in%  c(10, 11, 12, 1, 2, 3), "wet", "dry")) %>% 
      # changing units to RHESSys units
       # wind: in m/s so no conversion needed
       # relative humidity: % between 0 and 100 -> value between 0 and 1
@@ -108,5 +106,6 @@ get_all_grid_cell_data <- function(grid_cell_id, lat, lon, ui_gcm = default_ui_g
    assign(grid_cell_df_naming, joined_tbl, envir = .GlobalEnv)
   # temp in celcius, rain in meters  
 }
+
 
 

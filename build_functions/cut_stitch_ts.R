@@ -61,19 +61,22 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       year <- season_year[[1]][1]
       wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
-                                       & model_selection$water_year == year), ]
+                                       & model_selection$water_year == year),]
+      
+      # print(paste("******", head(new_cut)))
+      # print(paste("!!!!", tail(new_cut)))  
+      print(class(new_cut))
+      
       # Filter the first sequence by the start date
       if (i == series_selection[1]) {  
-        formatted_dates <- format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d")
-        start_date_month_day <- format(as.Date(start_date, format="%Y/%m/%d"), "%m-%d")
+        formatted_dates <- format(as.Date(new_cut$time, format="%Y-%m-%d"), "%m-%d")
+        start_date_month_day <- format(as.Date(start_date, format="%Y-%m-%d"), "%m-%d")
         start_index <- which(formatted_dates == start_date_month_day)[1]
         new_cut <- new_cut[start_index:nrow(new_cut), ]
       }
       combined_cut_model <- rbind(combined_cut_model, new_cut) # Add this cut to the existing data frame for all cuts
-    } # END SEASONS LOOP
-    
-  } # END IF
-  
+    }
+  }
   
   # DEALING WITH UNORDERED LEAP YEAR -----
   combined_cut_model <- combined_cut_model[!(format(combined_cut_model$time, "%m-%d") == "02-29"), ] # Remove all February 29ths in the data frame

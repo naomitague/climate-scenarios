@@ -1,26 +1,25 @@
-# ui_sample_cell will equal the NAME of the sample cell data frame (since this will be how shiny works) and then the base_data will equal the dataframe matching that name
-
-
-
-# not ready yet but will output as stated in the technical documentation draft: https://docs.google.com/document/d/1G1UKEErrcdLWn4X61f-iy2ByZO3PCXRP/edit#heading=h.psoig0rfj0i9 AND maybe add the centroids of the cal adapt grid cells?
-# also add what data each run is built off of (aka output from the randomly select and the number from the find matches output)
-
-# and download itself in the root folder of the data download
-
-# download itself in the root folder of the data download
-
+#' Get Metadata
+#'
+#' This function generates metadata based on user input and saves it to a CSV file.
+#'
+#' @details The function requires additional information, such as `all_cells`, `season` definitions, `scenario_duration`, `available_samples`, `desired_samples`, `historical_extremes` inclusion, and `calibration` inclusion. These details still need to be implemented in the function.
+#'
+#' @return None (metadata is saved to a CSV file and stored in the global environment).
+#' @import dplyr
+#' @import tidyr
+#' @export
 get_metadata <- function() {
   
   # still need: all_cells, season definitions, scenario duration, available samples, desired_samples, historical_extremes included y/n, calibration included y/n
   
-  # make a dataframe with the number of rows that we need which should match the number of runs built in the climate_vars_list
+  # make a dataframe with the number of rows that we nee
   climate_vars_df <- do.call(rbind, criteria_list) 
 
   # add in all the columns we need and save metadata to the global environment
   metadata <<- climate_vars_df %>% 
     mutate(gcm_rcp = ifelse(
       ui_caladapt_ind == 'Y', paste0(ui_gcm, "_", ui_rcp), 'NA: user input data')) %>% 
-    mutate(sample_cell = ui_sample_cell) %>% 
+    mutate(sample_cell = ui_sample_cell_metaData) %>% 
     mutate(all_cells = paste(ui_df_names, collapse = ", ")) %>%
     #mutate(dry_season_def = 'not functional') %>% # not yet functional
     #mutate(wet_season_def = 'not functional') %>% # not yet functional

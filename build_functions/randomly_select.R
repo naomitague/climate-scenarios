@@ -1,25 +1,25 @@
 #' Function to randomly select out of matching yearly options---------
 #' randomly_select()
 #'
-#' @param run_samples : output from 
+#' @param segment_samples : output from 
 #' Randomly select one of each option
 #' @return
 #' @export Save as new list sample_grid_series
 #'
 #' @examples
 
-randomly_select <- function(run_samples = run_samples) {
+randomly_select <- function(segment_samples = segment_samples) {
   
   # Create blank list for randomly selected elements
   sample_grid_series <- list()
   
   # Randomly select one element of each list
-  for (i in seq_along(run_samples)) {
-    if (length(run_samples[[i]]) == 1) {
-      sample_grid_series[[i]] <- run_samples[[i]]
+  for (i in seq_along(segment_samples)) {
+    if (length(segment_samples[[i]]) == 1) {
+      sample_grid_series[[i]] <- segment_samples[[i]]
     } 
     else {      # if only one option, select it (added this to fix random error)
-      sample_grid_series[[i]] <- base::sample(run_samples[[i]], size = 1, replace = TRUE)
+      sample_grid_series[[i]] <- base::sample(segment_samples[[i]], size = 1, replace = TRUE)
     }
   }
   

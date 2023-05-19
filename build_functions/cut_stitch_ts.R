@@ -41,10 +41,11 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   if(all(is.numeric(series_selection))) {
     
     # YEARS: Loop through, select range by time and cut and save
-    for (i in series_selection) {
-      new_cut <- model_selection[which(model_selection$water_year == i), ]  # Search matching time
+    for (i in 1:length(series_selection)) {
+      year <- series_selection[i]
+      new_cut <- model_selection[which(model_selection$water_year == year), ]  # Search matching time
       # Filter the first sequence by the start date
-      if (i == series_selection[1]) { 
+      if (i == 1) { 
         formatted_dates <- format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d")
         start_date_month_day <- format(as.Date(start_date, format="%Y/%m/%d"), "%m-%d")
         start_index <- which(formatted_dates == start_date_month_day)[1]
@@ -56,15 +57,15 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
   } else {
     
     # SEASONS: Loop through, select range by time and cut and save
-    for (i in series_selection) {
-      season_year <- strsplit(i, " ")
+    for (i in 1:length(series_selection)) {
+      season_year <- strsplit(series_selection[i], " ")
       year <- season_year[[1]][1]
       wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year),]
       
       # Filter the first sequence by the start date
-      if (i == series_selection[1]) {  
+      if (i == 1) {  
         formatted_dates <- format(as.Date(new_cut$time, format="%Y-%m-%d"), "%m-%d")
         start_date_month_day <- format(as.Date(start_date, format="%Y-%m-%d"), "%m-%d")
         start_index <- which(formatted_dates == start_date_month_day)[1]

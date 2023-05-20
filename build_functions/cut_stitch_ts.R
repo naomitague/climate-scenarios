@@ -42,8 +42,10 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
     
     # YEARS: Loop through, select range by time and cut and save
     for (i in 1:length(series_selection)) {
-      year <- series_selection[i]
-      new_cut <- model_selection[which(model_selection$water_year == year), ]  # Search matching time
+      selected_year <- series_selection[i]
+      new_cut <- model_selection[which(model_selection$water_year == selected_year), ]  # Search matching time
+      new_cut <- new_cut[order(as.Date(new_cut$time, format = "%Y/%m/%d")),]  # Make sure the dates are in order
+      
       # Filter the first sequence by the start date
       if (i == 1) { 
         formatted_dates <- format(as.Date(new_cut$time, format="%Y/%m/%d"), "%m-%d")
@@ -63,6 +65,7 @@ cut_stitch_ts <- function(model_selection = ui_sample_cell,      # loop through 
       wet_dry <- season_year[[1]][2]
       new_cut <- model_selection[which(model_selection$season == wet_dry 
                                        & model_selection$water_year == year),]
+      new_cut <- new_cut[order(as.Date(new_cut$time, format = "%Y/%m/%d")),]  # Make sure the dates are in ORDER
       
       # Filter the first sequence by the start date
       if (i == 1) {  

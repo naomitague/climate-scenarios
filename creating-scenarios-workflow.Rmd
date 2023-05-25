@@ -119,6 +119,10 @@ columns:
 
 ```{r User Data Upload}
 #upload data here
+
+# To get a sense for the format your data should be in and how to read it in, below is an example of a CalAdapt grid cell. Make sure your data follows the same format
+grid_cell_46662 <- read_csv("data_example.csv")
+head(grid_cell_46662)
 ```
 
 Now create your table to designate desired percentile filters for each
